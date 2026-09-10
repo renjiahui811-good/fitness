@@ -1,0 +1,549 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>训练与康复记录</title>
+<meta name="theme-color" content="#EEF1F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="训练记录">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231E6B58'/%3E%3Cpath d='M9 17l5 5 9-11' stroke='white' stroke-width='3.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --paper:#EEF1F0;
+    --card:#FFFFFF;
+    --ink:#16211F;
+    --mute:#6C7C78;
+    --line:#D3DAD8;
+    --jade:#1E6B58;
+    --jade-soft:#E2EEEA;
+    --amber:#9A7118;
+    --amber-soft:#F3EBD8;
+    --alert:#A8453A;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"PingFang SC","Noto Sans SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:20px 16px 80px}
+
+  /* ---------- header ---------- */
+  header{margin-bottom:22px}
+  h1{
+    font-family:"Songti SC","Noto Serif SC","Source Han Serif SC",serif;
+    font-size:26px;font-weight:600;letter-spacing:.04em;margin:0 0 10px;
+  }
+  .meter{
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+    padding:12px 14px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  .meter .now{
+    font-family:Georgia,"Songti SC",serif;font-size:30px;line-height:1;font-weight:600;
+  }
+  .meter .unit{font-size:13px;color:var(--mute)}
+  .meter .arrow{color:var(--mute);font-size:13px}
+  .meter .goal{font-family:Georgia,serif;font-size:17px;color:var(--mute)}
+  .meter .done{margin-left:auto;font-size:13px;color:var(--mute)}
+  .meter .done b{font-family:Georgia,serif;color:var(--jade);font-size:16px;font-weight:600}
+
+  /* ---------- weight chart ---------- */
+  .chart{margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px 8px}
+  .chart h2{font-size:13px;font-weight:500;color:var(--mute);margin:0 0 8px}
+  svg{display:block;width:100%;height:104px;overflow:visible}
+  .chart .legend{font-size:11px;color:var(--mute);margin-top:6px;display:flex;gap:14px}
+  .chart .legend i{display:inline-block;width:14px;height:0;border-top:2px solid var(--jade);vertical-align:middle;margin-right:5px}
+  .chart .legend i.t{border-top:2px dashed var(--mute)}
+
+  /* ---------- phases + spine rail ---------- */
+  .phase{margin-top:26px}
+  .phase-head{display:flex;align-items:baseline;gap:8px;margin:0 0 10px 2px}
+  .phase-head h2{
+    font-family:"Songti SC","Noto Serif SC",serif;font-size:17px;font-weight:600;margin:0;
+  }
+  .phase-head span{font-size:12px;color:var(--mute)}
+  .phase-head em{font-style:normal;margin-left:auto;font-size:12px;color:var(--mute);font-family:Georgia,serif}
+
+  .rail{position:relative;padding-left:26px}
+  .rail::before{
+    content:"";position:absolute;left:7px;top:14px;bottom:14px;width:2px;background:var(--line);
+  }
+  .day{position:relative;margin-bottom:8px}
+  .node{
+    position:absolute;left:-26px;top:15px;width:16px;height:16px;border-radius:5px;
+    background:var(--paper);border:2px solid var(--line);
+  }
+  .day.ok .node{background:var(--jade);border-color:var(--jade)}
+  .day.today .node{border-color:var(--ink);box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--ink)}
+
+  .row{
+    width:100%;text-align:left;display:flex;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:11px 13px;font:inherit;color:inherit;cursor:pointer;
+  }
+  .row:hover{border-color:#B9C4C1}
+  .row:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+  .day.today .row{border-color:var(--ink)}
+  .day.ok .row{background:var(--jade-soft);border-color:#C3DBD3}
+  .date{font-family:Georgia,serif;font-size:14px;width:52px;flex:none;color:var(--mute)}
+  .day.ok .date{color:var(--jade)}
+  .task{flex:1;font-size:14.5px}
+  .tag{font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:4px;padding:1px 6px;flex:none}
+  .day.ok .tag{border-color:#C3DBD3}
+  .chev{color:var(--mute);font-size:11px;flex:none;transition:transform .18s}
+  .day.open .chev{transform:rotate(90deg)}
+
+  /* ---------- panel ---------- */
+  .panel{display:none;background:var(--card);border:1px solid var(--line);border-top:none;
+    border-radius:0 0 var(--radius) var(--radius);margin-top:-1px;padding:4px 13px 14px}
+  .day.open .panel{display:block}
+  .day.open .row{border-radius:var(--radius) var(--radius) 0 0}
+  .block{padding-top:12px;border-top:1px solid var(--line);margin-top:12px}
+  .block:first-child{border-top:none;margin-top:0}
+  .block h3{font-size:12.5px;font-weight:600;color:var(--mute);margin:0 0 9px;letter-spacing:.02em}
+
+  label.chk{display:flex;align-items:center;gap:9px;padding:3px 0;cursor:pointer;font-size:14.5px}
+  label.chk input{appearance:none;width:19px;height:19px;flex:none;border:2px solid var(--line);
+    border-radius:5px;background:#fff;cursor:pointer;position:relative}
+  label.chk input:checked{background:var(--jade);border-color:var(--jade)}
+  label.chk input:checked::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(43deg)}
+  label.chk input:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+  label.chk input:checked + span{color:var(--mute);text-decoration:line-through}
+
+  .ex{margin-bottom:12px}
+  .ex-name{display:flex;align-items:baseline;gap:8px;font-size:14.5px}
+  .ex-name .target{font-size:11.5px;color:var(--mute)}
+  .ex-name .last{margin-left:auto;font-size:11.5px;color:var(--amber);font-family:Georgia,serif}
+  .sets{display:flex;gap:7px}
+  .set{flex:1;display:flex;align-items:center;background:var(--paper);border:1px solid var(--line);
+    border-radius:7px;padding:4px 6px;gap:3px;min-width:0}
+  .set span{font-size:10.5px;color:var(--mute);flex:none}
+  .set input{width:100%;min-width:0;border:none;background:transparent;font:inherit;
+    font-family:Georgia,serif;font-size:14px;text-align:center;padding:2px 0;color:var(--ink)}
+  .set input:focus{outline:none}
+  .set:focus-within{border-color:var(--jade);background:#fff}
+
+
+  .fig{width:64px;height:48px;flex:none;background:var(--paper);border:1px solid var(--line);
+    border-radius:7px;display:block}
+  .ex{margin-bottom:13px}
+  .rrow{display:flex;align-items:center;gap:9px}
+  .q{font-size:11px;color:var(--jade);border:1px solid #B4D2C8;border-radius:4px;
+    padding:0 5px;text-decoration:none;line-height:17px;flex:none}
+  .q:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+  .gh{font-size:12.5px;font-weight:600;color:var(--mute);margin:16px 0 8px 2px}
+  .gh:first-of-type{margin-top:0}
+  .libcard{display:grid;grid-template-columns:88px 1fr;gap:13px;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:8px;
+    scroll-margin-top:14px}
+  .libcard .fig{width:88px;height:66px}
+  .libcard p{margin:5px 0 8px;font-size:13px;line-height:1.6;color:#3E4C49}
+  .vid{font-size:11.5px;color:var(--jade);text-decoration:none;border-bottom:1px solid #B4D2C8;
+    padding-bottom:1px;white-space:nowrap}
+  .vid:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+  label.chk em{font-style:normal;font-size:12px;color:var(--mute)}
+  .field{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .field label{font-size:13.5px;color:var(--mute);flex:none;width:64px}
+  .field input[type=number],.field input[type=text],.field select{
+    flex:1;min-width:0;border:1px solid var(--line);border-radius:7px;background:var(--paper);
+    padding:7px 9px;font:inherit;font-size:14.5px;color:var(--ink)}
+  .field input[type=number]{font-family:Georgia,serif;max-width:110px}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--jade);background:#fff}
+  .hint{font-size:11.5px;color:var(--mute);margin-left:8px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:5px 12px;
+    font:inherit;font-size:13px;color:var(--mute);cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--jade-soft);border-color:var(--jade);color:var(--jade);font-weight:500}
+  .chip.warn[aria-pressed="true"]{background:#F6E4E1;border-color:var(--alert);color:var(--alert)}
+  .chip:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+
+  .note{background:var(--amber-soft);border-left:3px solid var(--amber);padding:9px 11px;
+    font-size:12.5px;color:#5C4A18;border-radius:0 6px 6px 0;margin-top:10px;line-height:1.55}
+  .alarm{background:#F6E4E1;border-left:3px solid var(--alert);color:#6E2A22;
+    padding:9px 11px;font-size:12.5px;border-radius:0 6px 6px 0;margin-top:10px;line-height:1.55}
+
+  #banner{display:none;background:#F6E4E1;border:1px solid #E0BDB7;color:#6E2A22;
+    padding:11px 13px;border-radius:var(--radius);font-size:12.5px;line-height:1.6;margin-bottom:16px}
+  #backup{margin-top:30px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:12px 14px}
+  #bNag{color:var(--amber);font-weight:600}
+  #backup summary{font-size:13.5px;font-weight:500;cursor:pointer;color:var(--mute)}
+  #backup p{font-size:12px;color:var(--mute);line-height:1.6;margin:9px 0}
+  #backup .btns{display:flex;gap:8px;margin-bottom:9px}
+  #backup button{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;
+    border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+  #backup button:hover{border-color:var(--jade);color:var(--jade)}
+  #backup textarea{width:100%;height:74px;border:1px solid var(--line);border-radius:7px;
+    background:var(--paper);padding:8px;font-size:11.5px;font-family:Menlo,monospace;
+    color:var(--ink);resize:vertical}
+  footer{margin-top:22px;font-size:12px;color:var(--mute);line-height:1.7}
+  #status{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(14px);
+    background:var(--ink);color:#fff;font-size:12.5px;padding:7px 15px;border-radius:16px;
+    opacity:0;transition:opacity .22s,transform .22s;pointer-events:none;z-index:9}
+  #status.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  #status.err{background:var(--alert)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>训练与康复记录</h1>
+    <div class="meter">
+      <span class="now" id="mNow">92.2</span><span class="unit">kg</span>
+      <span class="arrow">目标</span><span class="goal">80.0 kg</span>
+      <span class="done">已完成 <b id="mDone">0</b>/34 天</span>
+    </div>
+    <div class="chart">
+      <h2>体重趋势</h2>
+      <svg id="chart" viewBox="0 0 320 104" preserveAspectRatio="none" aria-label="体重趋势图"></svg>
+      <div class="legend"><span><i></i>实际</span><span><i class="t"></i>参考线</span></div>
+    </div>
+  </header>
+  <div id="banner">这个打开方式不支持自动保存。用浏览器(Chrome / Safari)打开这个文件就能自动保存;或者在页面底部「备份数据」里把记录导出保存。</div>
+  <div id="timeline"></div>
+  <details id="backup">
+    <summary>备份数据 <span id="bNag"></span></summary>
+    <p>换手机、换浏览器、或上面提示不能自动保存时用。导出后把这段文字存到备忘录,以后粘贴回来即可恢复。</p>
+    <div class="btns">
+      <button type="button" id="bExport">导出</button>
+      <button type="button" id="bImport">导入</button>
+    </div>
+    <textarea id="bText" placeholder="点「导出」生成备份文字;或把之前的备份粘贴到这里再点「导入」"></textarea>
+  </details>
+  <footer>
+    出现腿麻、手麻、下肢放射痛就停止训练并就医。
+  </footer>
+</div>
+<div id="status"></div>
+
+<script>
+const FIG={"上斜俯卧撑": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"74\" y=\"62\" width=\"42\" height=\"22\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><path d=\"M8 82 L40 66 L70 48\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M8 82 L26 74\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 48 L76 56 L80 62\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"80\" cy=\"40\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M100 44 L100 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(100,58) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "坐姿哑铃肩推": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M44 62 L78 62\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M76 62 L76 32\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 60 L46 62 L42 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 60 L66 38\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"65\" cy=\"28\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M66 40 L50 38 L46 18\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(45,16) rotate(0)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M66 40 L56 40 L54 22\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M94 40 L94 20\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(94,20) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "仰卧哑铃臂屈伸": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M22 80 L42 62 L64 78\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64 78 L88 78\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"78\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M86 78 L86 50 L70 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(68,43) rotate(90)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M64 34 L88 34\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(88,34) rotate(0.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "哑铃侧平举": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"60\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 26 L60 56\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L52 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L68 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 32 L44 32 L28 34\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(26,34) rotate(90)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M60 32 L76 32 L92 34\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(94,34) rotate(90)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M26 58 L26 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(26,44) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M94 58 L94 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(94,44) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "高脚杯深蹲": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M44 84 L66 60 L34 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L42 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"44\" cy=\"17\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M42 30 L54 36 L54 34\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(58,34)\"><path d=\"M-4 -4 A5 5 0 0 1 4 -4\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/><circle cx=\"0\" cy=\"3\" r=\"6\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.8\"/></g><path d=\"M96 42 L96 64\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(96,64) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "后撤步弓步": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 52 L40 64 L28 80 L22 84\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M72 84 L72 62 L60 52\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 52 L60 30\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"60\" cy=\"22\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 34 L54 44 L52 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M96 52 L96 72\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(96,72) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "单腿臀桥": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"18\" cy=\"76\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M26 76 L56 60\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L76 66 L76 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L72 52 L88 46\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 76 L38 82\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M50 82 L50 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(50,58) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "靠墙静蹲": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 6 L30 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 26 L34 60 L66 60 L66 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"34\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M38 34 L56 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M58 60 L58 68 L66 68\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M88 44 L88 60\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(88,60) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "坐姿弹力带划船": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"24\" y=\"74\" width=\"24\" height=\"8\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><path d=\"M34 72 L58 68 L80 74\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M80 74 L82 64\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 72 L32 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"31\" cy=\"35\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M33 46 L44 54 L54 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M54 58 Q70 66 80 68\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><path d=\"M66 42 L46 42\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(46,42) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "弹力带扩胸": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"60\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 26 L60 56\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L52 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L68 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 32 L44 32 L26 42\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 32 L76 32 L94 42\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 42 Q60 42 94 42\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><path d=\"M22 26 L10 26\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(10,26) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M98 26 L110 26\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(110,26) rotate(0.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "单臂壶铃划船": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"88\" y=\"56\" width=\"28\" height=\"28\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><path d=\"M26 84 L30 68 L34 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L72 48\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"84\" cy=\"44\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M72 49 L84 54 L92 56\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 50 L68 62 L66 72\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(66,76)\"><path d=\"M-4 -4 A5 5 0 0 1 4 -4\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/><circle cx=\"0\" cy=\"3\" r=\"6\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.8\"/></g><path d=\"M50 76 L50 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(50,58) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "靠墙天使": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"20\" y=\"4\" width=\"80\" height=\"80\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><circle cx=\"60\" cy=\"20\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 28 L60 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 58 L54 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 58 L66 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 34 L44 42 L40 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 34 L76 42 L80 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40 18 L40 8\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(40,8) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M80 18 L80 8\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(80,8) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "鸟狗": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"48\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M34 54 L74 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L32 68 L30 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M74 54 L80 68 L80 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L22 46 L6 40\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M74 54 L90 50 L110 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "侧平板": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"28\" cy=\"48\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M30 82 L48 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 82 L34 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 58 L68 68 L104 80\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 58 L58 64\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 42 L60 56\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(60,56) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "收下巴": "<circle cx=\"88\" cy=\"36\" r=\"13\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\"/><path d=\"M101 33 L114 36 L101 40\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"40\" cy=\"36\" r=\"13\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M53 33 L66 36 L53 40\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40 49 L40 68\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 72 L60 72\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M104 14 L58 14\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(58,14) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "臀桥": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"18\" cy=\"76\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M26 76 L56 60\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L78 66 L78 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L72 68 L72 84\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 76 L38 82\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M50 82 L50 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(50,58) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>"};
+const VID={"上斜俯卧撑": "incline+push+up+proper+form", "坐姿哑铃肩推": "seated+dumbbell+shoulder+press+form", "仰卧哑铃臂屈伸": "lying+dumbbell+triceps+extension", "哑铃侧平举": "dumbbell+lateral+raise+form", "高脚杯深蹲": "goblet+squat+proper+form", "后撤步弓步": "reverse+lunge+proper+form", "单腿臀桥": "single+leg+glute+bridge", "靠墙静蹲": "wall+sit+exercise", "坐姿弹力带划船": "seated+resistance+band+row", "弹力带扩胸": "band+pull+apart+form", "单臂壶铃划船": "one+arm+kettlebell+row+form", "靠墙天使": "wall+angel+exercise", "鸟狗": "bird+dog+exercise+form", "侧平板": "side+plank+proper+form", "收下巴": "chin+tuck+exercise+neck", "臀桥": "glute+bridge+exercise+form"};
+function fig(n){return FIG[n]?`<svg class="fig" viewBox="0 0 120 90" aria-hidden="true">${FIG[n]}</svg>`:`<span class="fig"></span>`;}
+function vid(n){return VID[n]?`<a class="vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${VID[n]}">看示范 ↗</a>`:"";}
+const REHAB = [{n:"鸟狗",t:"每侧8秒×8"},{n:"侧平板",t:"每侧8秒×6"},{n:"收下巴",t:"5秒×10"},{n:"臀桥",t:"×15"}];
+const REHAB_LITE = [{n:"收下巴",t:"5秒×10"},{n:"臀桥",t:"×15"}];
+const LIFTS = {
+  A:{title:"力量A · 上肢推",ex:[
+    {n:"上斜俯卧撑",t:"3×12 · 墙→固定台面→沙发扶手→地面",bw:true},
+    {n:"坐姿哑铃肩推",t:"3×12"},
+    {n:"仰卧哑铃臂屈伸",t:"3×15"},
+    {n:"哑铃侧平举",t:"3×15"}]},
+  B:{title:"力量B · 下肢",ex:[
+    {n:"高脚杯深蹲",t:"3×12 · 下蹲3秒停1秒"},
+    {n:"后撤步弓步",t:"3×10 每侧",bw:true},
+    {n:"单腿臀桥",t:"3×12 每侧",bw:true},
+    {n:"靠墙静蹲",t:"3×40秒",sec:true}]},
+  C:{title:"力量C · 上肢拉",ex:[
+    {n:"坐姿弹力带划船",t:"3×15 · 垫高坐,膝微弯",band:true},
+    {n:"弹力带扩胸",t:"3×20 · 替代面拉",band:true},
+    {n:"单臂壶铃划船",t:"3×12 每侧"},
+    {n:"靠墙天使",t:"3×12",bw:true}]}
+};
+const TARGETS = {"2026-09-08":92.2,"2026-09-21":93.5,"2026-09-28":91.5,"2026-10-05":90.8,"2026-10-11":90.2};
+
+function jp(d){return {d:d,type:"travel",label:"精简康复 3分钟"};}
+const PHASES = [
+  {name:"启动期",sub:"建立习惯",days:[
+    {d:"2026-09-08",type:"weigh",label:"康复 + 称体重(基线)"},
+    {d:"2026-09-09",type:"A",label:"康复 + 力量A"},
+    {d:"2026-09-10",type:"cardio",label:"康复 + 有氧 40分",min:40},
+    {d:"2026-09-11",type:"B",label:"康复 + 力量B"}]},
+  {name:"日本",sub:"9/12–9/20 旅行",travel:true,days:[
+    "2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16",
+    "2026-09-17","2026-09-18","2026-09-19","2026-09-20"].map(jp)},
+  {name:"第1周",sub:"归位",days:[
+    {d:"2026-09-21",type:"weigh",label:"康复 + 称体重"},
+    {d:"2026-09-22",type:"A",label:"康复 + 力量A"},
+    {d:"2026-09-23",type:"cardio",label:"康复 + 有氧 40分",min:40},
+    {d:"2026-09-24",type:"B",label:"康复 + 力量B"},
+    {d:"2026-09-25",type:"cardio",label:"康复 + 有氧 40分",min:40},
+    {d:"2026-09-26",type:"swim",label:"康复 + 游泳 40分",min:40},
+    {d:"2026-09-27",type:"rest",label:"康复(休息日)"}]},
+  {name:"第2周",sub:"加到 3 次力量",days:[
+    {d:"2026-09-28",type:"weigh",label:"康复 + 称体重"},
+    {d:"2026-09-29",type:"A",label:"康复 + 力量A"},
+    {d:"2026-09-30",type:"cardio",label:"康复 + 有氧 40分",min:40},
+    {d:"2026-10-01",type:"B",label:"康复 + 力量B"},
+    {d:"2026-10-02",type:"cardio",label:"康复 + 有氧 40分",min:40},
+    {d:"2026-10-03",type:"C",label:"康复 + 力量C"},
+    {d:"2026-10-04",type:"rest",label:"康复(休息日)"}]},
+  {name:"第3周",sub:"加重量",days:[
+    {d:"2026-10-05",type:"weigh",label:"康复 + 称体重"},
+    {d:"2026-10-06",type:"A",label:"康复 + 力量A(+2.5kg)"},
+    {d:"2026-10-07",type:"cardio",label:"康复 + 有氧 45分",min:45},
+    {d:"2026-10-08",type:"B",label:"康复 + 力量B(+2.5kg)"},
+    {d:"2026-10-09",type:"cardio",label:"康复 + 有氧 45分",min:45},
+    {d:"2026-10-10",type:"C",label:"康复 + 力量C(+2.5kg)"},
+    {d:"2026-10-11",type:"rest",label:"康复(休息日)"}]}
+];
+const ALLDAYS = PHASES.flatMap(p=>p.days);
+const WD = ["日","一","二","三","四","五","六"];
+const KEY = "fitlog-v1";
+const BKEY = "fitlog-bak";
+const MEM={};
+const HAS_APP = !!(window.storage && window.storage.set);
+let HAS_LS=false;
+try{localStorage.setItem("__t","1");localStorage.removeItem("__t");HAS_LS=true;}catch(e){}
+let MODE = HAS_APP?"app":(HAS_LS?"local":"mem");
+async function sGet(k){
+  if(MODE==="app"){try{const r=await window.storage.get(k);return r?r.value:null;}catch(e){return null;}}
+  if(MODE==="local"){try{return localStorage.getItem(k);}catch(e){}}
+  return MEM[k]||null;
+}
+async function sSet(k,v){
+  if(MODE==="app"){try{await window.storage.set(k,v);return true;}catch(e){MODE=HAS_LS?"local":"mem";}}
+  if(MODE==="local"){try{localStorage.setItem(k,v);return true;}catch(e){MODE="mem";}}
+  MEM[k]=v;return false;
+}
+let DATA = {};
+
+const todayStr = (()=>{const n=new Date();
+  return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");})();
+
+function toast(msg,err){const el=document.getElementById("status");el.textContent=msg;
+  el.className="on"+(err?" err":"");clearTimeout(el._t);el._t=setTimeout(()=>el.className="",1600);}
+
+async function load(){
+  try{const v=await sGet(KEY);DATA=v?JSON.parse(v):{};}catch(e){DATA={};}
+}
+let saveTimer;
+function save(quiet){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    const ok=await sSet(KEY,JSON.stringify(DATA));
+    if(!quiet)toast(ok?"已保存":"仅暂存,请导出备份",!ok);
+    const b=document.getElementById("banner");
+    if(b) b.style.display = (MODE==="mem")?"block":"none";
+  },350);
+}
+function rec(d){ if(!DATA[d])DATA[d]={rehab:[],main:false,sets:{},weight:"",cardio:"",min:"",flags:[],note:""}; return DATA[d]; }
+
+function isDone(day){
+  const r=DATA[day.d]; if(!r)return false;
+  const need = day.type==="travel"?REHAB_LITE.length:REHAB.length;
+  const rehabOk = (r.rehab||[]).filter(Boolean).length>=need;
+  if(day.type==="travel"||day.type==="rest"||day.type==="weigh") return rehabOk;
+  return rehabOk && !!r.main;
+}
+function lastLoad(exName,beforeDate){
+  const dates=Object.keys(DATA).filter(d=>d<beforeDate).sort().reverse();
+  for(const d of dates){const s=DATA[d].sets&&DATA[d].sets[exName];
+    if(s&&s.some(x=>x&&x.kg))return s.filter(x=>x&&x.kg).map(x=>x.kg).join("/");
+    if(s&&s.some(x=>x&&x.reps))return s.filter(x=>x&&x.reps).map(x=>x.reps).join("/")+"次";}
+  return null;
+}
+
+
+const LIB=[
+ {g:"上肢推 · A日",items:[
+  ["上斜俯卧撑","3×12","全程绷紧腹部,腰不能塌——塌腰是直接刺激滑脱的动作。难度顺序:靠墙 → 固定台面/窗台 → 沙发扶手 → 地面。别用餐桌,会滑会晃。"],
+  ["坐姿哑铃肩推","3×12","背靠椅背,下巴微收,不要仰头看哑铃。抬头看的那一下正好是颈椎最吃力的角度。"],
+  ["仰卧哑铃臂屈伸","3×15","躺着做,腰完全贴地。只有肘关节动,上臂固定不晃。"],
+  ["哑铃侧平举","3×15","手肘微弯,抬到与肩同高就停,不要耸肩。5kg 对你正好。"]]},
+ {g:"下肢 · B日",items:[
+  ["高脚杯深蹲","3×12","壶铃抱在胸前。下蹲 3 秒、底部停 1 秒,靠慢制造难度不靠重量。右膝有感觉就减小深度。"],
+  ["后撤步弓步","3×10 每侧","向后撤步,不要向前跨。前跨落地时对膝盖的冲击大很多,你的右膝受不起。"],
+  ["单腿臀桥","3×12 每侧","顶点夹紧臀部 1 秒。腰不要往上顶过头,是臀发力不是腰发力。你的臀无力是腰椎代偿的根源。"],
+  ["靠墙静蹲","3×40秒","大腿角度不低于 90°,膝盖不超过脚尖。后背全程贴墙。"]]},
+ {g:"上肢拉 · C日",items:[
+  ["坐姿弹力带划船","3×15","屁股下垫垫子、膝盖微弯,不然腘绳肌会把你的腰拉圆。先收肩胛,再拉肘。"],
+  ["弹力带扩胸","3×20","手臂微弯,肩胛骨向中间夹。这个替代面拉,是改善圆肩和颈椎前伸最有效的动作,不需要任何固定点。"],
+  ["单臂壶铃划船","3×12 每侧","一手扶椅面(只是撑,没有拉扯力),背保持平的,不要转腰。"],
+  ["靠墙天使","3×12","后脑、上背、手臂贴墙上下滑,哪里离墙了就停在那里。直接对抗颈椎生理曲度变直。"]]},
+ {g:"康复四件套 · 每天",items:[
+  ["鸟狗","每侧8秒×8","背上像放着一杯水,不塌不转。伸出的手和腿是对侧的。"],
+  ["侧平板","每侧8秒×6","做不动就用跪姿版。练腰方肌,对你的滑脱稳定性帮助最大。"],
+  ["收下巴","5秒×10 每天3组","下巴水平往后收,做出双下巴——不是低头。日本旅行期间也要做。"],
+  ["臀桥","×15","臀部发力把髋顶起来,不是靠腰。旅行期间保留动作之一。"]]}];
+const EXID={};LIB.forEach((g,gi)=>g.items.forEach((it,i)=>{EXID[it[0]]="ex-"+gi+"-"+i;}));
+function jump(n){return EXID[n]?`<a class="q" href="#${EXID[n]}" onclick="return goEx('${EXID[n]}')">图</a>`:"";}
+function goEx(id){const el=document.getElementById(id);
+  if(el){el.scrollIntoView({block:"center",behavior:"smooth"});
+    el.style.borderColor="#1E6B58";setTimeout(()=>el.style.borderColor="",1600);}
+  return false;}
+function renderLib(){
+  let h=`<section class="phase" id="lib"><div class="phase-head"><h2>动作库</h2><span>16 个动作 · 图示与要点</span></div>`;
+  LIB.forEach(g=>{
+    h+=`<h3 class="gh">${g.g}</h3>`;
+    g.items.forEach(it=>{
+      h+=`<div class="libcard" id="${EXID[it[0]]}">${fig(it[0])}<div>
+        <div class="ex-name"><b>${it[0]}</b><span class="target">${it[1]}</span></div>
+        <p>${it[2]}</p>${vid(it[0])}</div></div>`;
+    });
+  });
+  return h+`</section>`;
+}
+
+function render(){
+  const tl=document.getElementById("timeline");tl.innerHTML="";
+  PHASES.forEach(ph=>{
+    const done=ph.days.filter(isDone).length;
+    const sec=document.createElement("section");sec.className="phase";
+    sec.innerHTML=`<div class="phase-head"><h2>${ph.name}</h2><span>${ph.sub}</span><em>${done}/${ph.days.length}</em></div>`;
+    const rail=document.createElement("div");rail.className="rail";
+    ph.days.forEach(day=>rail.appendChild(dayEl(day)));
+    sec.appendChild(rail);tl.appendChild(sec);
+  });
+  tl.insertAdjacentHTML("beforeend",renderLib());
+  const total=ALLDAYS.filter(isDone).length;
+  document.getElementById("mDone").textContent=total;
+  const ws=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
+  document.getElementById("mNow").textContent=ws.length?Number(ws[ws.length-1]).toFixed(1):"92.2";
+  drawChart();
+}
+
+function dayEl(day){
+  const r=rec(day.d), dt=new Date(day.d+"T00:00:00");
+  const wrap=document.createElement("div");
+  wrap.className="day"+(isDone(day)?" ok":"")+(day.d===todayStr?" today":"");
+  const md=(dt.getMonth()+1)+"/"+dt.getDate();
+  wrap.innerHTML=`<div class="node"></div>
+    <button class="row" type="button">
+      <span class="date">${md} ${WD[dt.getDay()]}</span>
+      <span class="task">${day.label}</span>
+      ${day.d===todayStr?'<span class="tag">今天</span>':''}
+      <span class="chev">›</span>
+    </button><div class="panel"></div>`;
+  const panel=wrap.querySelector(".panel");
+  wrap.querySelector(".row").onclick=()=>{
+    if(!wrap.classList.contains("open")&&!panel.dataset.built){buildPanel(panel,day,r);panel.dataset.built="1";}
+    wrap.classList.toggle("open");
+  };
+  if(day.d===todayStr){buildPanel(panel,day,r);panel.dataset.built="1";wrap.classList.add("open");}
+  return wrap;
+}
+
+function buildPanel(p,day,r){
+  const list = day.type==="travel"?REHAB_LITE:REHAB;
+  // rehab
+  let h=`<div class="block"><h3>${day.type==="travel"?"精简康复":"康复 4 件套 · 10分钟"}</h3>`;
+  list.forEach((x,i)=>{h+=`<div class="rrow"><label class="chk"><input type="checkbox" data-k="rehab" data-i="${i}"${r.rehab&&r.rehab[i]?" checked":""}><span>${x.n} <em>${x.t}</em></span></label>${jump(x.n)}</div>`;});
+  h+=`</div>`;
+
+  if(LIFTS[day.type]){
+    const L=LIFTS[day.type];
+    h+=`<div class="block"><h3>${L.title}</h3>`;
+    L.ex.forEach(e=>{
+      const prev=lastLoad(e.n,day.d);
+      const s=(r.sets&&r.sets[e.n])||[];
+      h+=`<div class="ex"><div class="ex-name"><b>${e.n}</b>${jump(e.n)}<span class="target">${e.t}</span>${prev?`<span class="last">上次 ${prev}</span>`:""}</div><div class="sets">`;
+      for(let i=0;i<3;i++){
+        const v=s[i]||{};
+        h+=`<div class="set">`;
+        if(e.band) h+=`<input type="text" placeholder="带" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="kg" value="${(v.kg||"").toString().replace(/"/g,"&quot;")}">`;
+        else if(!e.bw) h+=`<input type="number" inputmode="decimal" placeholder="${e.sec?"秒":"kg"}" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="kg" value="${v.kg||""}"><span>${e.sec?"秒":"kg"}</span>`;
+        if(!e.sec) h+=`<input type="number" inputmode="numeric" placeholder="次" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="reps" value="${v.reps||""}"><span>次</span>`;
+        h+=`</div>`;
+      }
+      h+=`</div></div>`;
+    });
+    h+=`<label class="chk"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>这一天的力量训练完成</span></label>`;
+    h+=`<div class="note">重量固定,所以靠这三样变难:加次数 → 放慢下放速度(3秒)→ 换难度(俯卧撑降低支撑高度、弹力带站远一点或用两根)。腰、颈、右膝有任何不适,难度原地不动。</div></div>`;
+  }
+
+  if(day.type==="cardio"||day.type==="swim"){
+    h+=`<div class="block"><h3>有氧 ${day.min} 分钟</h3>
+      <div class="field"><label>方式</label><select data-k="cardio">
+        ${["","楼下快走","游泳","爬楼梯(只上不下)","原地低冲击有氧","椭圆机","水中快走"].map(o=>`<option${r.cardio===o?" selected":""}>${o}</option>`).join("")}
+      </select></div>
+      <div class="field"><label>时长</label><input type="number" inputmode="numeric" data-k="min" value="${r.min||""}" placeholder="${day.min}"><span class="hint">分钟 · 能说话但不能唱歌</span></div>
+      <label class="chk"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>有氧完成</span></label></div>`;
+  }
+
+  h+=`<div class="block"><h3>体重</h3>
+    <div class="field"><label>今日</label><input type="number" step="0.1" inputmode="decimal" data-k="weight" value="${r.weight||""}" placeholder="${TARGETS[day.d]?TARGETS[day.d].toFixed(1):"--"}">
+    <span class="hint">${TARGETS[day.d]?"参考 "+TARGETS[day.d].toFixed(1)+" kg":"早上空腹,看4周趋势"}</span></div></div>`;
+
+  h+=`<div class="block"><h3>身体反馈</h3><div class="chips">`;
+  ["都正常","腰酸","颈紧","膝痛","睡不够"].forEach(f=>{
+    h+=`<button type="button" class="chip${f==="都正常"?"":" warn"}" data-k="flag" data-f="${f}" aria-pressed="${(r.flags||[]).includes(f)}">${f}</button>`;});
+  h+=`</div><div class="field" style="margin-top:9px"><label>备注</label><input type="text" data-k="note" value="${(r.note||"").replace(/"/g,"&quot;")}" placeholder="吃了什么 / 哪里不舒服"></div>
+    <div class="alarm">出现腿麻、脚无力、下肢放射痛、手指麻木 → 停止训练,尽快看医生。</div></div>`;
+
+  p.innerHTML=h;
+  p.querySelectorAll("input,select").forEach(el=>{
+    const ev = el.type==="checkbox"||el.tagName==="SELECT"?"change":"input";
+    el.addEventListener(ev,()=>onChange(day,el));
+  });
+  p.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
+    const rr=rec(day.d);rr.flags=rr.flags||[];const f=c.dataset.f;
+    const on=c.getAttribute("aria-pressed")==="true";
+    if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);
+    c.setAttribute("aria-pressed",String(!on));save();
+  }));
+}
+
+function onChange(day,el){
+  const r=rec(day.d),k=el.dataset.k;
+  if(k==="rehab"){r.rehab=r.rehab||[];r.rehab[+el.dataset.i]=el.checked;refresh(day);}
+  else if(k==="main"){r.main=el.checked;refresh(day);}
+  else if(k==="set"){r.sets=r.sets||{};const ex=el.dataset.ex;r.sets[ex]=r.sets[ex]||[];
+    const i=+el.dataset.i;r.sets[ex][i]=r.sets[ex][i]||{};r.sets[ex][i][el.dataset.f]=el.value;}
+  else if(k==="weight"){r.weight=el.value;document.getElementById("mNow").textContent=
+    (ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean).pop()||92.2);drawChart();}
+  else r[k]=el.value;
+  save();
+}
+function refresh(day){
+  const nodes=[...document.querySelectorAll(".day")];
+  const idx=ALLDAYS.findIndex(d=>d.d===day.d);
+  const el=nodes[idx];if(el)el.classList.toggle("ok",isDone(day));
+  document.getElementById("mDone").textContent=ALLDAYS.filter(isDone).length;
+  PHASES.forEach((ph,i)=>{const em=document.querySelectorAll(".phase-head em")[i];
+    if(em)em.textContent=ph.days.filter(isDone).length+"/"+ph.days.length;});
+}
+
+function drawChart(){
+  const svg=document.getElementById("chart"),W=320,H=104,P=6;
+  const pts=ALLDAYS.map((d,i)=>({i,d:d.d,w:DATA[d.d]&&DATA[d.d].weight?+DATA[d.d].weight:null}))
+                   .filter(p=>p.w);
+  const tk=Object.keys(TARGETS).map(k=>({i:ALLDAYS.findIndex(d=>d.d===k),w:TARGETS[k]})).filter(p=>p.i>=0);
+  const all=[...pts.map(p=>p.w),...tk.map(p=>p.w)];
+  const lo=Math.min(...all)-1.2,hi=Math.max(...all)+1.2,n=ALLDAYS.length-1;
+  const X=i=>P+(i/n)*(W-2*P), Y=w=>H-P-((w-lo)/(hi-lo))*(H-2*P);
+  const path=a=>a.map((p,j)=>(j?"L":"M")+X(p.i).toFixed(1)+" "+Y(p.w).toFixed(1)).join(" ");
+  let s=`<path d="${path(tk)}" fill="none" stroke="#6C7C78" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+  if(pts.length){
+    s+=`<path d="${path(pts)}" fill="none" stroke="#1E6B58" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>`;
+    pts.forEach(p=>{s+=`<circle cx="${X(p.i).toFixed(1)}" cy="${Y(p.w).toFixed(1)}" r="3" fill="#1E6B58" vector-effect="non-scaling-stroke"/>`;});
+  }
+  svg.innerHTML=s;
+}
+
+function initBackup(){
+  const ta=document.getElementById("bText");
+  document.getElementById("bExport").onclick=()=>{
+    ta.value=JSON.stringify(DATA);ta.select();
+    sSet(BKEY,todayStr);
+    const n=document.getElementById("bNag");if(n)n.textContent="";
+    try{navigator.clipboard.writeText(ta.value);toast("已导出并复制");}catch(e){toast("已导出,请长按复制");}
+  };
+  document.getElementById("bImport").onclick=async()=>{
+    let d;try{d=JSON.parse(ta.value.trim());}catch(e){return toast("这段文字读不出来",true);}
+    if(!d||typeof d!=="object")return toast("这段文字读不出来",true);
+    Object.keys(d).forEach(k=>{DATA[k]=Object.assign(DATA[k]||{},d[k]);});
+    await sSet(KEY,JSON.stringify(DATA));
+    document.getElementById("timeline").innerHTML="";render();toast("已导入");
+  };
+}
+(async()=>{
+  await load();
+  render();
+  initBackup();
+  (async()=>{const last=await sGet(BKEY);
+    const days=last?Math.round((new Date(todayStr)-new Date(last))/864e5):999;
+    if(MODE!=="app"&&days>=14)document.getElementById("bNag").textContent="· 该备份了";})();
+  if(MODE==="mem")document.getElementById("banner").style.display="block";
+  const t=document.querySelector(".day.today");
+  if(t)setTimeout(()=>t.scrollIntoView({block:"center",behavior:"smooth"}),260);
+})();
+</script>
