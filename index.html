@@ -144,6 +144,7 @@
     border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:8px;
     scroll-margin-top:14px}
   .libcard .fig{width:88px;height:66px}
+  .libcard.nofig{grid-template-columns:1fr}
   .libcard p{margin:5px 0 8px;font-size:13px;line-height:1.6;color:#3E4C49}
   .vid{font-size:11.5px;color:var(--jade);text-decoration:none;border-bottom:1px solid #B4D2C8;
     padding-bottom:1px;white-space:nowrap}
@@ -172,10 +173,20 @@
 
   #banner{display:none;background:#F6E4E1;border:1px solid #E0BDB7;color:#6E2A22;
     padding:11px 13px;border-radius:var(--radius);font-size:12.5px;line-height:1.6;margin-bottom:16px}
-  #backup{margin-top:30px;background:var(--card);border:1px solid var(--line);
+  #sync{margin-top:30px}
+  #sync,#backup{margin-top:10px;background:var(--card);border:1px solid var(--line);
     border-radius:var(--radius);padding:12px 14px}
   #bNag{color:var(--amber);font-weight:600}
-  #backup summary{font-size:13.5px;font-weight:500;cursor:pointer;color:var(--mute)}
+  #sync summary,#backup summary{font-size:13.5px;font-weight:500;cursor:pointer;color:var(--mute)}
+  #sync p{font-size:12px;color:var(--mute);line-height:1.6;margin:9px 0}
+  #sync a{color:var(--jade)}
+  #sync code{background:var(--paper);padding:1px 4px;border-radius:3px}
+  #sync .field label{width:78px}
+  #sync .field input{max-width:none}
+  #sync .btns{display:flex;gap:8px;margin:10px 0 2px}
+  #sync button{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+  #sync button:hover{border-color:var(--jade);color:var(--jade)}
+  #sStat{font-size:12px;font-weight:400}
   #backup p{font-size:12px;color:var(--mute);line-height:1.6;margin:9px 0}
   #backup .btns{display:flex;gap:8px;margin-bottom:9px}
   #backup button{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;
@@ -197,9 +208,9 @@
   <header>
     <h1>训练与康复记录</h1>
     <div class="meter">
-      <span class="now" id="mNow">92.2</span><span class="unit">kg</span>
-      <span class="arrow">目标</span><span class="goal">80.0 kg</span>
-      <span class="done">已完成 <b id="mDone">0</b>/34 天</span>
+      <span class="now" id="mNow">—</span><span class="unit">kg</span>
+      <span class="arrow">两周后参考</span><span class="goal" id="mGoal">—</span>
+      <span class="done">已完成 <b id="mDone">0</b>/<span id="mTot">—</span> 天</span>
     </div>
     <div class="chart">
       <h2>体重趋势</h2>
@@ -209,6 +220,17 @@
   </header>
   <div id="banner">这个打开方式不支持自动保存。用浏览器(Chrome / Safari)打开这个文件就能自动保存;或者在页面底部「备份数据」里把记录导出保存。</div>
   <div id="timeline"></div>
+  <details id="sync">
+    <summary>多设备同步 <span id="sStat"></span></summary>
+    <p>手机和电脑要看到同一份记录时用。去 <a href="https://jsonbin.io" target="_blank" rel="noopener">jsonbin.io</a> 免费注册,建一个内容为 <code>{}</code> 的 Bin,再建一个有读写权限的 Access Key,把两项填在下面。每台设备填一次,只存在本机,不会进仓库。</p>
+    <div class="field"><label>Bin ID</label><input type="text" id="sBin" placeholder="像 68a1f0c3ae5..." autocomplete="off"></div>
+    <div class="field"><label>Access Key</label><input type="password" id="sKey" placeholder="$2a$10$..." autocomplete="off"></div>
+    <div class="btns">
+      <button type="button" id="sSave">保存并同步</button>
+      <button type="button" id="sNow">立即同步</button>
+      <button type="button" id="sOff">关闭</button>
+    </div>
+  </details>
   <details id="backup">
     <summary>备份数据 <span id="bNag"></span></summary>
     <p>换手机、换浏览器、或上面提示不能自动保存时用。导出后把这段文字存到备忘录,以后粘贴回来即可恢复。</p>
@@ -229,66 +251,109 @@ const FIG={"上斜俯卧撑": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"
 const VID={"上斜俯卧撑": "incline+push+up+proper+form", "坐姿哑铃肩推": "seated+dumbbell+shoulder+press+form", "仰卧哑铃臂屈伸": "lying+dumbbell+triceps+extension", "哑铃侧平举": "dumbbell+lateral+raise+form", "高脚杯深蹲": "goblet+squat+proper+form", "后撤步弓步": "reverse+lunge+proper+form", "单腿臀桥": "single+leg+glute+bridge", "靠墙静蹲": "wall+sit+exercise", "坐姿弹力带划船": "seated+resistance+band+row", "弹力带扩胸": "band+pull+apart+form", "单臂壶铃划船": "one+arm+kettlebell+row+form", "靠墙天使": "wall+angel+exercise", "鸟狗": "bird+dog+exercise+form", "侧平板": "side+plank+proper+form", "收下巴": "chin+tuck+exercise+neck", "臀桥": "glute+bridge+exercise+form"};
 function fig(n){return FIG[n]?`<svg class="fig" viewBox="0 0 120 90" aria-hidden="true">${FIG[n]}</svg>`:`<span class="fig"></span>`;}
 function vid(n){return VID[n]?`<a class="vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${VID[n]}">看示范 ↗</a>`:"";}
+const WARM=[{n:"原地踏步 / 快走",t:"3 分钟"},{n:"髋部绕环",t:"10 圈 每侧"},
+  {n:"猫牛式",t:"8 次 · 后仰别到底"},{n:"肩部绕环",t:"前后各 10 次"},{n:"空手深蹲",t:"10 次"}];
+const COOL=[{n:"仰卧腘绳肌拉伸",t:"30 秒 每侧 · 毛巾勾脚"},{n:"仰卧4字臀拉伸",t:"30 秒 每侧"},
+  {n:"扶墙股四头肌拉伸",t:"30 秒 每侧"},{n:"墙角胸部拉伸",t:"30 秒 每侧"},{n:"颈侧拉伸",t:"20 秒 每侧"}];
 const REHAB = [{n:"鸟狗",t:"每侧8秒×8"},{n:"侧平板",t:"每侧8秒×6"},{n:"收下巴",t:"5秒×10"},{n:"臀桥",t:"×15"}];
 const REHAB_LITE = [{n:"收下巴",t:"5秒×10"},{n:"臀桥",t:"×15"}];
 const LIFTS = {
-  A:{title:"力量A · 上肢推",ex:[
-    {n:"上斜俯卧撑",t:"3×12 · 墙→固定台面→沙发扶手→地面",bw:true},
-    {n:"坐姿哑铃肩推",t:"3×12"},
-    {n:"仰卧哑铃臂屈伸",t:"3×15"},
-    {n:"哑铃侧平举",t:"3×15"}]},
-  B:{title:"力量B · 下肢",ex:[
-    {n:"高脚杯深蹲",t:"3×12 · 下蹲3秒停1秒"},
-    {n:"后撤步弓步",t:"3×10 每侧",bw:true},
-    {n:"单腿臀桥",t:"3×12 每侧",bw:true},
-    {n:"靠墙静蹲",t:"3×40秒",sec:true}]},
-  C:{title:"力量C · 上肢拉",ex:[
-    {n:"坐姿弹力带划船",t:"3×15 · 垫高坐,膝微弯",band:true},
-    {n:"弹力带扩胸",t:"3×20 · 替代面拉",band:true},
-    {n:"单臂壶铃划船",t:"3×12 每侧"},
-    {n:"靠墙天使",t:"3×12",bw:true}]}
+  FA:{title:"全身A · 推 + 腿",ex:[
+    {n:"上斜俯卧撑",t:"12 次 · 墙→固定台面→沙发扶手→地面",bw:true},
+    {n:"高脚杯深蹲",t:"12 次 · 下蹲3秒停1秒"},
+    {n:"弹力带扩胸",t:"20 次 · 替代面拉",band:true},
+    {n:"哑铃侧平举",t:"15 次"}]},
+  FB:{title:"全身B · 拉 + 腿",ex:[
+    {n:"坐姿弹力带划船",t:"15 次 · 垫高坐,膝微弯",band:true},
+    {n:"后撤步弓步",t:"10 次 每侧",bw:true},
+    {n:"单臂壶铃划船",t:"12 次 每侧"},
+    {n:"靠墙天使",t:"12 次",bw:true}]}
 };
-const TARGETS = {"2026-09-08":92.2,"2026-09-21":93.5,"2026-09-28":91.5,"2026-10-05":90.8,"2026-10-11":90.2};
+const RATE = 0.6;
+function baseW(){const w=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
+  return w.length?+w[0]:null;}
+function targetFor(i){const b=baseW();return b===null?null:+(b-RATE*(i/7)).toFixed(1);}
 
-function jp(d){return {d:d,type:"travel",label:"精简康复 3分钟"};}
 const PHASES = [
-  {name:"启动期",sub:"建立习惯",days:[
-    {d:"2026-09-08",type:"weigh",label:"康复 + 称体重(基线)"},
-    {d:"2026-09-09",type:"A",label:"康复 + 力量A"},
-    {d:"2026-09-10",type:"cardio",label:"康复 + 有氧 40分",min:40},
-    {d:"2026-09-11",type:"B",label:"康复 + 力量B"}]},
-  {name:"日本",sub:"9/12–9/20 旅行",travel:true,days:[
-    "2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16",
-    "2026-09-17","2026-09-18","2026-09-19","2026-09-20"].map(jp)},
-  {name:"第1周",sub:"归位",days:[
-    {d:"2026-09-21",type:"weigh",label:"康复 + 称体重"},
-    {d:"2026-09-22",type:"A",label:"康复 + 力量A"},
-    {d:"2026-09-23",type:"cardio",label:"康复 + 有氧 40分",min:40},
-    {d:"2026-09-24",type:"B",label:"康复 + 力量B"},
-    {d:"2026-09-25",type:"cardio",label:"康复 + 有氧 40分",min:40},
-    {d:"2026-09-26",type:"swim",label:"康复 + 游泳 40分",min:40},
-    {d:"2026-09-27",type:"rest",label:"康复(休息日)"}]},
-  {name:"第2周",sub:"加到 3 次力量",days:[
-    {d:"2026-09-28",type:"weigh",label:"康复 + 称体重"},
-    {d:"2026-09-29",type:"A",label:"康复 + 力量A"},
-    {d:"2026-09-30",type:"cardio",label:"康复 + 有氧 40分",min:40},
-    {d:"2026-10-01",type:"B",label:"康复 + 力量B"},
-    {d:"2026-10-02",type:"cardio",label:"康复 + 有氧 40分",min:40},
-    {d:"2026-10-03",type:"C",label:"康复 + 力量C"},
-    {d:"2026-10-04",type:"rest",label:"康复(休息日)"}]},
-  {name:"第3周",sub:"加重量",days:[
-    {d:"2026-10-05",type:"weigh",label:"康复 + 称体重"},
-    {d:"2026-10-06",type:"A",label:"康复 + 力量A(+2.5kg)"},
-    {d:"2026-10-07",type:"cardio",label:"康复 + 有氧 45分",min:45},
-    {d:"2026-10-08",type:"B",label:"康复 + 力量B(+2.5kg)"},
-    {d:"2026-10-09",type:"cardio",label:"康复 + 有氧 45分",min:45},
-    {d:"2026-10-10",type:"C",label:"康复 + 力量C(+2.5kg)"},
-    {d:"2026-10-11",type:"rest",label:"康复(休息日)"}]}
+  {name:"第1周",sub:"每个动作 1 组 · 康复目标 3 天",days:[
+    {d:"2026-10-19",type:"rest",label:"称体重 + 晚上康复 10分"},
+    {d:"2026-10-20",type:"FA",label:"全身A",s:1},
+    {d:"2026-10-21",type:"rest",label:"休息"},
+    {d:"2026-10-22",type:"FB",label:"全身B",s:1},
+    {d:"2026-10-23",type:"walk",label:"快走 30分"},
+    {d:"2026-10-24",type:"cardio",label:"有氧 40分(游泳/快走)"},
+    {d:"2026-10-25",type:"rest",label:"休息 + 导出发给 Claude"}]},
+  {name:"第2周",sub:"每个动作 2 组 · 康复目标 5 天",days:[
+    {d:"2026-10-26",type:"rest",label:"称体重 + 晚上康复 10分"},
+    {d:"2026-10-27",type:"FA",label:"全身A",s:2},
+    {d:"2026-10-28",type:"rest",label:"休息"},
+    {d:"2026-10-29",type:"FB",label:"全身B",s:2},
+    {d:"2026-10-30",type:"walk",label:"快走 30分"},
+    {d:"2026-10-31",type:"cardio",label:"有氧 40分(游泳/快走)"},
+    {d:"2026-11-01",type:"rest",label:"休息 + 导出发给 Claude"}]}
 ];
 const ALLDAYS = PHASES.flatMap(p=>p.days);
 const WD = ["日","一","二","三","四","五","六"];
 const KEY = "fitlog-v1";
 const BKEY = "fitlog-bak";
+const SKEY = "fitlog-sync";
+const API  = "https://api.jsonbin.io/v3/b/";
+let SYNC=null, pushTimer=null;
+function sStat(t,err){const el=document.getElementById("sStat");
+  if(el){el.textContent=t?("· "+t):"";el.style.color=err?"#A8453A":"#1E6B58";}}
+function hhmm(){return new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"});}
+function mergeIn(rec){
+  if(!rec||typeof rec!=="object")return;
+  Object.keys(rec).forEach(k=>{
+    const a=DATA[k], b=rec[k];
+    if(!b||typeof b!=="object")return;
+    if(!a){DATA[k]=b;return;}
+    if((b._t||0)>(a._t||0))DATA[k]=b;
+  });
+}
+async function pull(silent){
+  if(!SYNC)return;
+  if(!silent)sStat("同步中…");
+  try{
+    const r=await fetch(API+SYNC.bin+"/latest",{headers:{"X-Access-Key":SYNC.key}});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    mergeIn(j.record);
+    await sSet(KEY,JSON.stringify(DATA));
+    document.getElementById("timeline").innerHTML="";render();initJump();
+    sStat("已同步 "+hhmm());
+  }catch(e){sStat("读取失败 "+e.message,true);}
+}
+async function push(){
+  if(!SYNC)return;
+  try{
+    const r=await fetch(API+SYNC.bin,{method:"PUT",
+      headers:{"Content-Type":"application/json","X-Access-Key":SYNC.key},
+      body:JSON.stringify(DATA)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    sStat("已同步 "+hhmm());
+  }catch(e){sStat("上传失败 "+e.message,true);}
+}
+function schedulePush(){
+  if(!SYNC)return;
+  clearTimeout(pushTimer);pushTimer=setTimeout(push,2500);
+}
+function initJump(){}
+function initSync(){
+  const bi=document.getElementById("sBin"), ke=document.getElementById("sKey");
+  if(SYNC){bi.value=SYNC.bin;ke.value=SYNC.key;}
+  document.getElementById("sSave").onclick=async()=>{
+    const b=bi.value.trim(), k=ke.value.trim();
+    if(!b||!k)return sStat("两项都要填",true);
+    SYNC={bin:b,key:k};await sSet(SKEY,JSON.stringify(SYNC));
+    await pull();await push();
+  };
+  document.getElementById("sNow").onclick=()=>pull();
+  document.getElementById("sOff").onclick=async()=>{
+    SYNC=null;await sSet(SKEY,"");sStat("已关闭");bi.value="";ke.value="";
+  };
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&SYNC)pull(true);});
+}
 const MEM={};
 const HAS_APP = !!(window.storage && window.storage.set);
 let HAS_LS=false;
@@ -321,18 +386,18 @@ function save(quiet){
   saveTimer=setTimeout(async()=>{
     const ok=await sSet(KEY,JSON.stringify(DATA));
     if(!quiet)toast(ok?"已保存":"仅暂存,请导出备份",!ok);
+    schedulePush();
     const b=document.getElementById("banner");
     if(b) b.style.display = (MODE==="mem")?"block":"none";
   },350);
 }
-function rec(d){ if(!DATA[d])DATA[d]={rehab:[],main:false,sets:{},weight:"",cardio:"",min:"",flags:[],note:""}; return DATA[d]; }
+function rec(d){ if(!DATA[d])DATA[d]={rehab:[],warm:[],cool:[],main:false,sets:{},weight:"",cardio:"",min:"",flags:[],note:""}; return DATA[d]; }
 
 function isDone(day){
   const r=DATA[day.d]; if(!r)return false;
-  const need = day.type==="travel"?REHAB_LITE.length:REHAB.length;
-  const rehabOk = (r.rehab||[]).filter(Boolean).length>=need;
-  if(day.type==="travel"||day.type==="rest"||day.type==="weigh") return rehabOk;
-  return rehabOk && !!r.main;
+  const rehabOk = (r.rehab||[]).filter(Boolean).length>0;
+  if(LIFTS[day.type]||day.type==="cardio"||day.type==="walk"||day.type==="swim") return !!r.main;
+  return rehabOk;
 }
 function lastLoad(exName,beforeDate){
   const dates=Object.keys(DATA).filter(d=>d<beforeDate).sort().reverse();
@@ -344,26 +409,38 @@ function lastLoad(exName,beforeDate){
 
 
 const LIB=[
- {g:"上肢推 · A日",items:[
-  ["上斜俯卧撑","3×12","全程绷紧腹部,腰不能塌——塌腰是直接刺激滑脱的动作。难度顺序:靠墙 → 固定台面/窗台 → 沙发扶手 → 地面。别用餐桌,会滑会晃。"],
-  ["坐姿哑铃肩推","3×12","背靠椅背,下巴微收,不要仰头看哑铃。抬头看的那一下正好是颈椎最吃力的角度。"],
-  ["仰卧哑铃臂屈伸","3×15","躺着做,腰完全贴地。只有肘关节动,上臂固定不晃。"],
-  ["哑铃侧平举","3×15","手肘微弯,抬到与肩同高就停,不要耸肩。5kg 对你正好。"]]},
- {g:"下肢 · B日",items:[
-  ["高脚杯深蹲","3×12","壶铃抱在胸前。下蹲 3 秒、底部停 1 秒,靠慢制造难度不靠重量。右膝有感觉就减小深度。"],
-  ["后撤步弓步","3×10 每侧","向后撤步,不要向前跨。前跨落地时对膝盖的冲击大很多,你的右膝受不起。"],
-  ["单腿臀桥","3×12 每侧","顶点夹紧臀部 1 秒。腰不要往上顶过头,是臀发力不是腰发力。你的臀无力是腰椎代偿的根源。"],
-  ["靠墙静蹲","3×40秒","大腿角度不低于 90°,膝盖不超过脚尖。后背全程贴墙。"]]},
- {g:"上肢拉 · C日",items:[
-  ["坐姿弹力带划船","3×15","屁股下垫垫子、膝盖微弯,不然腘绳肌会把你的腰拉圆。先收肩胛,再拉肘。"],
-  ["弹力带扩胸","3×20","手臂微弯,肩胛骨向中间夹。这个替代面拉,是改善圆肩和颈椎前伸最有效的动作,不需要任何固定点。"],
-  ["单臂壶铃划船","3×12 每侧","一手扶椅面(只是撑,没有拉扯力),背保持平的,不要转腰。"],
-  ["靠墙天使","3×12","后脑、上背、手臂贴墙上下滑,哪里离墙了就停在那里。直接对抗颈椎生理曲度变直。"]]},
- {g:"康复四件套 · 每天",items:[
-  ["鸟狗","每侧8秒×8","背上像放着一杯水,不塌不转。伸出的手和腿是对侧的。"],
-  ["侧平板","每侧8秒×6","做不动就用跪姿版。练腰方肌,对你的滑脱稳定性帮助最大。"],
-  ["收下巴","5秒×10 每天3组","下巴水平往后收,做出双下巴——不是低头。日本旅行期间也要做。"],
-  ["臀桥","×15","臀部发力把髋顶起来,不是靠腰。旅行期间保留动作之一。"]]}];
+ {g:"全身A",items:[
+  ["上斜俯卧撑","12 次","全程绷紧腹部,腰不能塌——塌腰是直接刺激滑脱的动作。难度顺序:靠墙 → 固定台面/窗台 → 沙发扶手 → 地面。别用餐桌,会滑会晃。","incline+push+up+proper+form"],
+  ["高脚杯深蹲","12 次","壶铃抱在胸前。下蹲 3 秒、底部停 1 秒,靠慢制造难度不靠重量。右膝有感觉就减小深度。","goblet+squat+proper+form"],
+  ["弹力带扩胸","20 次","手臂微弯,肩胛骨向中间夹。这个替代面拉,是改善圆肩和颈椎前伸最有效的动作,不需要任何固定点。","band+pull+apart+form"],
+  ["哑铃侧平举","15 次","手肘微弯,抬到与肩同高就停,不要耸肩。5kg 对你正好。","dumbbell+lateral+raise+form"]]},
+ {g:"全身B",items:[
+  ["坐姿弹力带划船","15 次","屁股下垫垫子、膝盖微弯,不然腘绳肌会把你的腰拉圆。先收肩胛,再拉肘。","seated+resistance+band+row"],
+  ["后撤步弓步","10 次 每侧","向后撤步,不要向前跨。前跨落地时对膝盖的冲击大很多,你的右膝受不起。","reverse+lunge+proper+form"],
+  ["单臂壶铃划船","12 次 每侧","一手扶椅面(只是撑,没有拉扯力),背保持平的,不要转腰。","one+arm+kettlebell+row+form"],
+  ["靠墙天使","12 次","后脑、上背、手臂贴墙上下滑,哪里离墙了就停在那里。直接对抗颈椎生理曲度变直。","wall+angel+exercise"]]},
+ {g:"康复四件套 · 目标每周5天",items:[
+  ["鸟狗","每侧8秒×8","背上像放着一杯水,不塌不转。伸出的手和腿是对侧的。","bird+dog+exercise+form"],
+  ["侧平板","每侧8秒×6","做不动就用跪姿版。练腰方肌,对你的滑脱稳定性帮助最大。","side+plank+proper+form"],
+  ["收下巴","5秒×10 每天3组","下巴水平往后收,做出双下巴——不是低头。坐办公室想起来就做。","chin+tuck+exercise+neck"],
+  ["臀桥","×15","臀部发力把髋顶起来,不是靠腰。轻松做满 15 次之后,换成下面的单腿臀桥。","glute+bridge+exercise+form"]]},
+ {g:"热身 · 训练前 6 分钟",items:[
+  ["原地踏步 / 快走","3 分钟","最重要的一步。冷着身体直接练,风险不在肌肉在你的腰和膝。","marching+in+place+warm+up"],
+  ["髋部绕环","10 圈 每侧","扶着椅背单腿画圈,把髋关节打开。深蹲和弓步之前必做。","hip+circles+warm+up+exercise"],
+  ["猫牛式","8 次","四点支撑,拱背和塌腰交替。缓慢,**后仰不要做到最大** —— 腰椎过伸是你要避开的方向。","cat+cow+exercise+form"],
+  ["肩部绕环","前后各 10 次","肩胛骨画大圈,幅度到位就行,不用快。","shoulder+circles+warm+up"],
+  ["空手深蹲","10 次","不拿壶铃,纯粹预演动作轨迹,顺便检查膝盖今天状态如何。","bodyweight+squat+proper+form"]]},
+ {g:"拉伸 · 训练后 5 分钟",items:[
+  ["仰卧腘绳肌拉伸","30 秒 每侧","躺着,毛巾勾住脚掌往身体方向拉。**绝不要站着弯腰摸脚趾** —— 那是对滑脱最糟的一种拉伸。","supine+hamstring+stretch+towel"],
+  ["仰卧4字臀拉伸","30 秒 每侧","仰卧,一脚踝搭在对侧膝上成4字,双手抱住下面那条大腿往胸口带。","figure+4+stretch+supine"],
+  ["扶墙股四头肌拉伸","30 秒 每侧","扶墙站稳,手抓同侧脚踝往臀部带,膝盖朝下不外翻。","standing+quad+stretch+form"],
+  ["墙角胸部拉伸","30 秒 每侧","手肘撑墙角或门框,身体前倾。改善圆肩,配合靠墙天使一起做。","doorway+chest+stretch"],
+  ["颈侧拉伸","20 秒 每侧","头侧倒,同侧手轻放头顶,只用手的重量,不要用力压。","lateral+neck+stretch+gentle"]]},
+ {g:"备选 · 暂时不排进计划",items:[
+  ["单腿臀桥","12 次 每侧","双腿臀桥做够 15 次不吃力之后的进阶。顶点夹紧臀部 1 秒,腰不要往上顶过头。","single+leg+glute+bridge"],
+  ["坐姿哑铃肩推","12 次","肩膀练熟之后可以加。背靠椅背,下巴微收,不要仰头看哑铃。","seated+dumbbell+shoulder+press+form"],
+  ["仰卧哑铃臂屈伸","15 次","想单独练手臂时加。躺着做,腰完全贴地,只有肘关节动。","lying+dumbbell+triceps+extension"],
+  ["靠墙静蹲","40 秒","膝盖不舒服那天的替代动作,零冲击。大腿角度不低于 90°。","wall+sit+exercise"]]}];
 const EXID={};LIB.forEach((g,gi)=>g.items.forEach((it,i)=>{EXID[it[0]]="ex-"+gi+"-"+i;}));
 function jump(n){return EXID[n]?`<a class="q" href="#${EXID[n]}" onclick="return goEx('${EXID[n]}')">图</a>`:"";}
 function goEx(id){const el=document.getElementById(id);
@@ -375,7 +452,7 @@ function renderLib(){
   LIB.forEach(g=>{
     h+=`<h3 class="gh">${g.g}</h3>`;
     g.items.forEach(it=>{
-      h+=`<div class="libcard" id="${EXID[it[0]]}">${fig(it[0])}<div>
+      h+=`<div class="libcard${FIG[it[0]]?"":" nofig"}" id="${EXID[it[0]]}">${FIG[it[0]]?fig(it[0]):""}<div>
         <div class="ex-name"><b>${it[0]}</b><span class="target">${it[1]}</span></div>
         <p>${it[2]}</p>${vid(it[0])}</div></div>`;
     });
@@ -396,8 +473,11 @@ function render(){
   tl.insertAdjacentHTML("beforeend",renderLib());
   const total=ALLDAYS.filter(isDone).length;
   document.getElementById("mDone").textContent=total;
+  document.getElementById("mTot").textContent=ALLDAYS.length;
+  const gt=targetFor(ALLDAYS.length-1);
+  document.getElementById("mGoal").textContent=gt===null?"填体重后显示":gt.toFixed(1)+" kg";
   const ws=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
-  document.getElementById("mNow").textContent=ws.length?Number(ws[ws.length-1]).toFixed(1):"92.2";
+  document.getElementById("mNow").textContent=ws.length?Number(ws[ws.length-1]).toFixed(1):"—";
   drawChart();
 }
 
@@ -422,6 +502,12 @@ function dayEl(day){
   return wrap;
 }
 
+function checklist(key,title,list,r){
+  let h=`<div class="block"><h3>${title}</h3>`;
+  list.forEach((x,i)=>{h+=`<div class="rrow"><label class="chk"><input type="checkbox" data-k="${key}" data-i="${i}"${r[key]&&r[key][i]?" checked":""}><span>${x.n} <em>${x.t}</em></span></label>${jump(x.n)}</div>`;});
+  if(key==="cool")h+=`<div class="note">弯腰摸脚趾永远不做——腰椎无支撑被动屈曲,对滑脱最糟。拉腘绳肌躺着用毛巾勾脚。</div>`;
+  return h+`</div>`;
+}
 function buildPanel(p,day,r){
   const list = day.type==="travel"?REHAB_LITE:REHAB;
   // rehab
@@ -429,14 +515,16 @@ function buildPanel(p,day,r){
   list.forEach((x,i)=>{h+=`<div class="rrow"><label class="chk"><input type="checkbox" data-k="rehab" data-i="${i}"${r.rehab&&r.rehab[i]?" checked":""}><span>${x.n} <em>${x.t}</em></span></label>${jump(x.n)}</div>`;});
   h+=`</div>`;
 
+  const isTrain = LIFTS[day.type]||day.type==="cardio"||day.type==="walk"||day.type==="swim";
+  if(isTrain) h+=checklist("warm","热身 · 6分钟 · 训练前",WARM,r);
   if(LIFTS[day.type]){
-    const L=LIFTS[day.type];
+    const L=LIFTS[day.type];const NS=day.s||3;
     h+=`<div class="block"><h3>${L.title}</h3>`;
     L.ex.forEach(e=>{
       const prev=lastLoad(e.n,day.d);
       const s=(r.sets&&r.sets[e.n])||[];
-      h+=`<div class="ex"><div class="ex-name"><b>${e.n}</b>${jump(e.n)}<span class="target">${e.t}</span>${prev?`<span class="last">上次 ${prev}</span>`:""}</div><div class="sets">`;
-      for(let i=0;i<3;i++){
+      h+=`<div class="ex"><div class="ex-name"><b>${e.n}</b>${jump(e.n)}<span class="target">${NS} 组 × ${e.t}</span>${prev?`<span class="last">上次 ${prev}</span>`:""}</div><div class="sets">`;
+      for(let i=0;i<NS;i++){
         const v=s[i]||{};
         h+=`<div class="set">`;
         if(e.band) h+=`<input type="text" placeholder="带" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="kg" value="${(v.kg||"").toString().replace(/"/g,"&quot;")}">`;
@@ -450,18 +538,20 @@ function buildPanel(p,day,r){
     h+=`<div class="note">重量固定,所以靠这三样变难:加次数 → 放慢下放速度(3秒)→ 换难度(俯卧撑降低支撑高度、弹力带站远一点或用两根)。腰、颈、右膝有任何不适,难度原地不动。</div></div>`;
   }
 
-  if(day.type==="cardio"||day.type==="swim"){
-    h+=`<div class="block"><h3>有氧 ${day.min} 分钟</h3>
+  if(day.type==="cardio"||day.type==="swim"||day.type==="walk"){
+    h+=`<div class="block"><h3>有氧 ${day.type==="walk"?30:40} 分钟</h3>
       <div class="field"><label>方式</label><select data-k="cardio">
         ${["","楼下快走","游泳","爬楼梯(只上不下)","原地低冲击有氧","椭圆机","水中快走"].map(o=>`<option${r.cardio===o?" selected":""}>${o}</option>`).join("")}
       </select></div>
-      <div class="field"><label>时长</label><input type="number" inputmode="numeric" data-k="min" value="${r.min||""}" placeholder="${day.min}"><span class="hint">分钟 · 能说话但不能唱歌</span></div>
+      <div class="field"><label>时长</label><input type="number" inputmode="numeric" data-k="min" value="${r.min||""}" placeholder="${day.type==="walk"?30:40}"><span class="hint">分钟 · 能说话但不能唱歌</span></div>
       <label class="chk"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>有氧完成</span></label></div>`;
   }
 
+  if(isTrain) h+=checklist("cool","拉伸 · 5分钟 · 训练后",COOL,r);
   h+=`<div class="block"><h3>体重</h3>
-    <div class="field"><label>今日</label><input type="number" step="0.1" inputmode="decimal" data-k="weight" value="${r.weight||""}" placeholder="${TARGETS[day.d]?TARGETS[day.d].toFixed(1):"--"}">
-    <span class="hint">${TARGETS[day.d]?"参考 "+TARGETS[day.d].toFixed(1)+" kg":"早上空腹,看4周趋势"}</span></div></div>`;
+    <div class="field"><label>今日</label><input type="number" step="0.1" inputmode="decimal" data-k="weight" value="${r.weight||""}" placeholder="${(()=>{const t=targetFor(ALLDAYS.findIndex(x=>x.d===day.d));return t===null?"--":t.toFixed(1);})()}">
+    <span class="hint">${(()=>{const t=targetFor(ALLDAYS.findIndex(x=>x.d===day.d));
+      return t===null?"早上空腹。第一次填的数字会成为参考线起点":"参考 "+t.toFixed(1)+" kg · 早上空腹";})()}</span></div></div>`;
 
   h+=`<div class="block"><h3>身体反馈</h3><div class="chips">`;
   ["都正常","腰酸","颈紧","膝痛","睡不够"].forEach(f=>{
@@ -477,14 +567,14 @@ function buildPanel(p,day,r){
   p.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
     const rr=rec(day.d);rr.flags=rr.flags||[];const f=c.dataset.f;
     const on=c.getAttribute("aria-pressed")==="true";
-    if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);
+    if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);rr._t=Date.now();
     c.setAttribute("aria-pressed",String(!on));save();
   }));
 }
 
 function onChange(day,el){
-  const r=rec(day.d),k=el.dataset.k;
-  if(k==="rehab"){r.rehab=r.rehab||[];r.rehab[+el.dataset.i]=el.checked;refresh(day);}
+  const r=rec(day.d),k=el.dataset.k;r._t=Date.now();
+  if(k==="rehab"||k==="warm"||k==="cool"){r[k]=r[k]||[];r[k][+el.dataset.i]=el.checked;if(k==="rehab")refresh(day);}
   else if(k==="main"){r.main=el.checked;refresh(day);}
   else if(k==="set"){r.sets=r.sets||{};const ex=el.dataset.ex;r.sets[ex]=r.sets[ex]||[];
     const i=+el.dataset.i;r.sets[ex][i]=r.sets[ex][i]||{};r.sets[ex][i][el.dataset.f]=el.value;}
@@ -506,8 +596,9 @@ function drawChart(){
   const svg=document.getElementById("chart"),W=320,H=104,P=6;
   const pts=ALLDAYS.map((d,i)=>({i,d:d.d,w:DATA[d.d]&&DATA[d.d].weight?+DATA[d.d].weight:null}))
                    .filter(p=>p.w);
-  const tk=Object.keys(TARGETS).map(k=>({i:ALLDAYS.findIndex(d=>d.d===k),w:TARGETS[k]})).filter(p=>p.i>=0);
+  const tk=ALLDAYS.map((d,i)=>({i,w:targetFor(i)})).filter(p=>p.w!==null);
   const all=[...pts.map(p=>p.w),...tk.map(p=>p.w)];
+  if(!all.length){svg.innerHTML="";return;}
   const lo=Math.min(...all)-1.2,hi=Math.max(...all)+1.2,n=ALLDAYS.length-1;
   const X=i=>P+(i/n)*(W-2*P), Y=w=>H-P-((w-lo)/(hi-lo))*(H-2*P);
   const path=a=>a.map((p,j)=>(j?"L":"M")+X(p.i).toFixed(1)+" "+Y(p.w).toFixed(1)).join(" ");
@@ -536,9 +627,12 @@ function initBackup(){
   };
 }
 (async()=>{
+  try{const sv=await sGet(SKEY);SYNC=sv?JSON.parse(sv):null;}catch(e){SYNC=null;}
   await load();
   render();
   initBackup();
+  initSync();
+  if(SYNC)pull(true);
   (async()=>{const last=await sGet(BKEY);
     const days=last?Math.round((new Date(todayStr)-new Date(last))/864e5):999;
     if(MODE!=="app"&&days>=14)document.getElementById("bNag").textContent="· 该备份了";})();
