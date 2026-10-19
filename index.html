@@ -150,14 +150,15 @@
     padding-bottom:1px;white-space:nowrap}
   .vid:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
   label.chk em{font-style:normal;font-size:12px;color:var(--mute)}
-  .field{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .field{display:flex;align-items:center;gap:9px;margin-bottom:8px;flex-wrap:wrap}
   .field label{font-size:13.5px;color:var(--mute);flex:none;width:64px}
   .field input[type=number],.field input[type=text],.field select{
     flex:1;min-width:0;border:1px solid var(--line);border-radius:7px;background:var(--paper);
     padding:7px 9px;font:inherit;font-size:14.5px;color:var(--ink)}
-  .field input[type=number]{font-family:Georgia,serif;max-width:110px}
+  .field input[type=number]{font-family:Georgia,serif;flex:0 0 118px;width:118px;max-width:118px;
+    min-width:118px;font-size:17px;text-align:center}
   .field input:focus,.field select:focus{outline:none;border-color:var(--jade);background:#fff}
-  .hint{font-size:11.5px;color:var(--mute);margin-left:8px}
+  .hint{font-size:11.5px;color:var(--mute);flex:1 0 100%;margin:4px 0 0 73px;line-height:1.5}
 
   .chips{display:flex;flex-wrap:wrap;gap:7px}
   .chip{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:5px 12px;
@@ -182,6 +183,7 @@
   #sync a{color:var(--jade)}
   #sync code{background:var(--paper);padding:1px 4px;border-radius:3px}
   #sync .field label{width:78px}
+  #sync .field input{flex:1 1 160px;min-width:0;max-width:none}
   #sync .field input{max-width:none}
   #sync .btns{display:flex;gap:8px;margin:10px 0 2px}
   #sync button{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
@@ -578,8 +580,12 @@ function onChange(day,el){
   else if(k==="main"){r.main=el.checked;refresh(day);}
   else if(k==="set"){r.sets=r.sets||{};const ex=el.dataset.ex;r.sets[ex]=r.sets[ex]||[];
     const i=+el.dataset.i;r.sets[ex][i]=r.sets[ex][i]||{};r.sets[ex][i][el.dataset.f]=el.value;}
-  else if(k==="weight"){r.weight=el.value;document.getElementById("mNow").textContent=
-    (ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean).pop()||92.2);drawChart();}
+  else if(k==="weight"){r.weight=el.value;
+    const ws=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
+    document.getElementById("mNow").textContent=ws.length?Number(ws[ws.length-1]).toFixed(1):"—";
+    const gt=targetFor(ALLDAYS.length-1);
+    document.getElementById("mGoal").textContent=gt===null?"填体重后显示":gt.toFixed(1)+" kg";
+    drawChart();}
   else r[k]=el.value;
   save();
 }
