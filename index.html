@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>训练与康复记录</title>
+<title>早晨训练记录</title>
 <meta name="theme-color" content="#EEF1F0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -34,7 +34,7 @@
   .wrap{max-width:640px;margin:0 auto;padding:20px 16px 80px}
 
   /* ---------- header ---------- */
-  header{margin-bottom:22px}
+  header{margin-bottom:18px}
   h1{
     font-family:"Songti SC","Noto Serif SC","Source Han Serif SC",serif;
     font-size:26px;font-weight:600;letter-spacing:.04em;margin:0 0 10px;
@@ -52,18 +52,30 @@
   .meter .goal{font-family:Georgia,serif;font-size:17px;color:var(--mute)}
   .meter .done{margin-left:auto;font-size:13px;color:var(--mute)}
   .meter .done b{font-family:Georgia,serif;color:var(--jade);font-size:16px;font-weight:600}
+  .meter .sub{flex:1 0 100%;font-size:12px;color:var(--mute);margin-top:2px}
 
   /* ---------- weight chart ---------- */
   .chart{margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px 8px}
   .chart h2{font-size:13px;font-weight:500;color:var(--mute);margin:0 0 8px}
   svg{display:block;width:100%;height:104px;overflow:visible}
-  .chart .legend{font-size:11px;color:var(--mute);margin-top:6px;display:flex;gap:14px}
+  .chart .legend{font-size:11px;color:var(--mute);margin-top:6px;display:flex;gap:14px;flex-wrap:wrap}
   .chart .legend i{display:inline-block;width:14px;height:0;border-top:2px solid var(--jade);vertical-align:middle;margin-right:5px}
   .chart .legend i.t{border-top:2px dashed var(--mute)}
+  .chart .legend i.d{width:6px;height:6px;border:none;border-radius:50%;background:#9DBFB4}
+  .chart .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--mute);font-family:Georgia,serif;margin-top:2px}
+
+  /* ---------- today ---------- */
+  .todayhead{display:flex;align-items:baseline;gap:8px;margin:22px 0 10px 2px}
+  .todayhead h2{font-family:"Songti SC","Noto Serif SC",serif;font-size:19px;font-weight:600;margin:0}
+  .todayhead span{font-size:12.5px;color:var(--mute)}
+  .todaycard{background:var(--card);border:1px solid var(--ink);border-radius:var(--radius);padding:4px 13px 14px}
+  .prog{height:6px;background:var(--paper);border-radius:3px;overflow:hidden;margin:12px 0 2px}
+  .prog i{display:block;height:100%;background:var(--jade);width:0;transition:width .25s}
+  .progtxt{font-size:11.5px;color:var(--mute)}
 
   /* ---------- phases + spine rail ---------- */
   .phase{margin-top:26px}
-  .phase-head{display:flex;align-items:baseline;gap:8px;margin:0 0 10px 2px}
+  .phase-head{display:flex;align-items:baseline;gap:8px;margin:0 0 10px 2px;flex-wrap:wrap}
   .phase-head h2{
     font-family:"Songti SC","Noto Serif SC",serif;font-size:17px;font-weight:600;margin:0;
   }
@@ -91,9 +103,12 @@
   .row:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
   .day.today .row{border-color:var(--ink)}
   .day.ok .row{background:var(--jade-soft);border-color:#C3DBD3}
+  .day.rest .row{background:transparent}
+  .day.rest.ok .row{background:var(--jade-soft)}
   .date{font-family:Georgia,serif;font-size:14px;width:52px;flex:none;color:var(--mute)}
   .day.ok .date{color:var(--jade)}
   .task{flex:1;font-size:14.5px}
+  .day.rest .task{color:var(--mute)}
   .tag{font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:4px;padding:1px 6px;flex:none}
   .day.ok .tag{border-color:#C3DBD3}
   .chev{color:var(--mute);font-size:11px;flex:none;transition:transform .18s}
@@ -108,19 +123,30 @@
   .block:first-child{border-top:none;margin-top:0}
   .block h3{font-size:12.5px;font-weight:600;color:var(--mute);margin:0 0 9px;letter-spacing:.02em}
 
-  label.chk{display:flex;align-items:center;gap:9px;padding:3px 0;cursor:pointer;font-size:14.5px}
-  label.chk input{appearance:none;width:19px;height:19px;flex:none;border:2px solid var(--line);
-    border-radius:5px;background:#fff;cursor:pointer;position:relative}
+  label.chk{display:flex;align-items:center;gap:9px;padding:3px 0;cursor:pointer;font-size:14.5px;flex:1;min-width:0}
+  label.chk input{appearance:none;-webkit-appearance:none;width:19px;height:19px;flex:none;border:2px solid var(--line);
+    border-radius:5px;background:#fff;cursor:pointer;position:relative;margin:0}
   label.chk input:checked{background:var(--jade);border-color:var(--jade)}
   label.chk input:checked::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;
     border:solid #fff;border-width:0 2px 2px 0;transform:rotate(43deg)}
   label.chk input:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
   label.chk input:checked + span{color:var(--mute);text-decoration:line-through}
+  label.chk em{font-style:normal;font-size:12px;color:var(--mute)}
 
-  .ex{margin-bottom:12px}
-  .ex-name{display:flex;align-items:baseline;gap:8px;font-size:14.5px}
+  .rrow{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+  .thumb{width:60px;height:40px;flex:none;border-radius:6px;overflow:hidden;background:var(--paper);
+    border:1px solid var(--line);display:block;padding:0;cursor:pointer}
+  .thumb img,.thumb svg{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb.empty{cursor:default}
+  .thumb:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+
+  .ex{margin-bottom:14px}
+  .exhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .exhead .thumb{width:84px;height:56px}
+  .exhead .meta{flex:1;min-width:0}
+  .ex-name{display:flex;align-items:baseline;gap:8px;font-size:14.5px;flex-wrap:wrap}
   .ex-name .target{font-size:11.5px;color:var(--mute)}
-  .ex-name .last{margin-left:auto;font-size:11.5px;color:var(--amber);font-family:Georgia,serif}
+  .last{font-size:11.5px;color:var(--amber);font-family:Georgia,serif}
   .sets{display:flex;gap:7px}
   .set{flex:1;display:flex;align-items:center;background:var(--paper);border:1px solid var(--line);
     border-radius:7px;padding:4px 6px;gap:3px;min-width:0}
@@ -130,26 +156,31 @@
   .set input:focus{outline:none}
   .set:focus-within{border-color:var(--jade);background:#fff}
 
+  .vids{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+  .vidrow{display:flex;align-items:center;gap:9px;background:var(--paper);border:1px solid var(--line);
+    border-radius:8px;padding:8px 10px}
+  .vidrow.on{border-color:var(--jade);background:var(--jade-soft)}
+  .vidrow .vt{flex:1;min-width:0;font-size:13.5px;line-height:1.45}
+  .vidrow .vt em{display:block;font-style:normal;font-size:11.5px;color:var(--mute)}
+  .vidrow a{font-size:12px;color:var(--jade);text-decoration:none;border:1px solid #B4D2C8;border-radius:5px;
+    padding:3px 8px;flex:none;background:#fff}
+  .vidrow button{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:5px;
+    padding:3px 8px;color:var(--mute);cursor:pointer;flex:none}
+  .vidrow.on button{border-color:var(--jade);color:var(--jade)}
 
-  .fig{width:64px;height:48px;flex:none;background:var(--paper);border:1px solid var(--line);
-    border-radius:7px;display:block}
-  .ex{margin-bottom:13px}
-  .rrow{display:flex;align-items:center;gap:9px}
-  .q{font-size:11px;color:var(--jade);border:1px solid #B4D2C8;border-radius:4px;
-    padding:0 5px;text-decoration:none;line-height:17px;flex:none}
-  .q:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
   .gh{font-size:12.5px;font-weight:600;color:var(--mute);margin:16px 0 8px 2px}
-  .gh:first-of-type{margin-top:0}
-  .libcard{display:grid;grid-template-columns:88px 1fr;gap:13px;background:var(--card);
-    border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:8px;
-    scroll-margin-top:14px}
-  .libcard .fig{width:88px;height:66px}
+  .libcard{display:grid;grid-template-columns:120px 1fr;gap:13px;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:8px;
+    scroll-margin-top:14px;transition:border-color .3s}
+  .libcard .pic{width:120px;height:80px;border-radius:7px;overflow:hidden;background:var(--paper);border:1px solid var(--line)}
+  .libcard .pic img,.libcard .pic svg{width:100%;height:100%;object-fit:cover;display:block}
   .libcard.nofig{grid-template-columns:1fr}
   .libcard p{margin:5px 0 8px;font-size:13px;line-height:1.6;color:#3E4C49}
   .vid{font-size:11.5px;color:var(--jade);text-decoration:none;border-bottom:1px solid #B4D2C8;
     padding-bottom:1px;white-space:nowrap}
   .vid:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
-  label.chk em{font-style:normal;font-size:12px;color:var(--mute)}
+  @media (max-width:420px){.libcard{grid-template-columns:96px 1fr}.libcard .pic{width:96px;height:64px}}
+
   .field{display:flex;align-items:center;gap:9px;margin-bottom:8px;flex-wrap:wrap}
   .field label{font-size:13.5px;color:var(--mute);flex:none;width:64px}
   .field input[type=number],.field input[type=text],.field select{
@@ -158,7 +189,7 @@
   .field input[type=number]{font-family:Georgia,serif;flex:0 0 118px;width:118px;max-width:118px;
     min-width:118px;font-size:17px;text-align:center}
   .field input:focus,.field select:focus{outline:none;border-color:var(--jade);background:#fff}
-  .hint{font-size:11.5px;color:var(--mute);flex:1 0 100%;margin:4px 0 0 73px;line-height:1.5}
+  .hint{font-size:11.5px;color:var(--mute);flex:1 0 calc(100% - 73px);max-width:calc(100% - 73px);margin:4px 0 0 73px;line-height:1.5}
 
   .chips{display:flex;flex-wrap:wrap;gap:7px}
   .chip{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:5px 12px;
@@ -167,37 +198,53 @@
   .chip.warn[aria-pressed="true"]{background:#F6E4E1;border-color:var(--alert);color:var(--alert)}
   .chip:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
 
+  .meal{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+  .meal b{font-size:13px;font-weight:500;width:34px;flex:none;color:var(--ink)}
+  .meal .chips{flex:1;gap:6px}
+  .meal .chip{padding:4px 10px;font-size:12.5px}
+  .score{font-family:Georgia,serif;color:var(--jade);font-weight:600}
+
   .note{background:var(--amber-soft);border-left:3px solid var(--amber);padding:9px 11px;
     font-size:12.5px;color:#5C4A18;border-radius:0 6px 6px 0;margin-top:10px;line-height:1.55}
   .alarm{background:#F6E4E1;border-left:3px solid var(--alert);color:#6E2A22;
     padding:9px 11px;font-size:12.5px;border-radius:0 6px 6px 0;margin-top:10px;line-height:1.55}
+  .btn{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:var(--jade);color:var(--jade)}
+
+  .guide{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px}
+  .guide h3{font-size:14px;margin:0 0 6px}
+  .guide p,.guide li{font-size:13px;line-height:1.65;color:#3E4C49}
+  .guide p{margin:4px 0 8px}
+  .guide ul{margin:4px 0 8px;padding-left:18px}
+  .big{font-family:Georgia,serif;font-size:20px;font-weight:600;color:var(--jade)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-weight:500;color:var(--mute);font-size:11.5px}
+  td.k{font-family:Georgia,serif;white-space:nowrap}
+  td.g{color:var(--jade)}
+  td.b{color:var(--alert)}
 
   #banner{display:none;background:#F6E4E1;border:1px solid #E0BDB7;color:#6E2A22;
     padding:11px 13px;border-radius:var(--radius);font-size:12.5px;line-height:1.6;margin-bottom:16px}
-  #sync{margin-top:30px}
-  #sync,#backup{margin-top:10px;background:var(--card);border:1px solid var(--line);
+  #weekly,#sync,#backup{margin-top:10px;background:var(--card);border:1px solid var(--line);
     border-radius:var(--radius);padding:12px 14px}
+  #weekly{margin-top:30px}
   #bNag{color:var(--amber);font-weight:600}
-  #sync summary,#backup summary{font-size:13.5px;font-weight:500;cursor:pointer;color:var(--mute)}
-  #sync p{font-size:12px;color:var(--mute);line-height:1.6;margin:9px 0}
+  #weekly summary,#sync summary,#backup summary{font-size:13.5px;font-weight:500;cursor:pointer;color:var(--mute)}
+  #weekly p,#sync p,#backup p{font-size:12px;color:var(--mute);line-height:1.6;margin:9px 0}
   #sync a{color:var(--jade)}
   #sync code{background:var(--paper);padding:1px 4px;border-radius:3px}
   #sync .field label{width:78px}
   #sync .field input{flex:1 1 160px;min-width:0;max-width:none}
-  #sync .field input{max-width:none}
-  #sync .btns{display:flex;gap:8px;margin:10px 0 2px}
-  #sync button{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
-  #sync button:hover{border-color:var(--jade);color:var(--jade)}
+  .btns{display:flex;gap:8px;margin:10px 0 9px;flex-wrap:wrap}
   #sStat{font-size:12px;font-weight:400}
-  #backup p{font-size:12px;color:var(--mute);line-height:1.6;margin:9px 0}
-  #backup .btns{display:flex;gap:8px;margin-bottom:9px}
-  #backup button{font:inherit;font-size:13px;padding:6px 15px;border-radius:7px;
-    border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
-  #backup button:hover{border-color:var(--jade);color:var(--jade)}
-  #backup textarea{width:100%;height:74px;border:1px solid var(--line);border-radius:7px;
+  textarea{width:100%;height:74px;border:1px solid var(--line);border-radius:7px;
     background:var(--paper);padding:8px;font-size:11.5px;font-family:Menlo,monospace;
     color:var(--ink);resize:vertical}
+  #wText{height:150px;font-family:inherit;font-size:12.5px}
   footer{margin-top:22px;font-size:12px;color:var(--mute);line-height:1.7}
+  footer a{color:var(--mute)}
   #status{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(14px);
     background:var(--ink);color:#fff;font-size:12.5px;padding:7px 15px;border-radius:16px;
     opacity:0;transition:opacity .22s,transform .22s;pointer-events:none;z-index:9}
@@ -208,98 +255,148 @@
 
 <div class="wrap">
   <header>
-    <h1>训练与康复记录</h1>
+    <h1>早晨训练记录</h1>
     <div class="meter">
       <span class="now" id="mNow">—</span><span class="unit">kg</span>
-      <span class="arrow">两周后参考</span><span class="goal" id="mGoal">—</span>
-      <span class="done">已完成 <b id="mDone">0</b>/<span id="mTot">—</span> 天</span>
+      <span class="arrow">→ 12/31</span><span class="goal">85.0</span>
+      <span class="done">训练 <b id="mDone">0</b>/<span id="mTot">—</span></span>
+      <span class="sub" id="mSub">7 天平均 · 早上空腹称</span>
     </div>
     <div class="chart">
-      <h2>体重趋势</h2>
+      <h2>体重趋势 · 11/2 – 12/31</h2>
       <svg id="chart" viewBox="0 0 320 104" preserveAspectRatio="none" aria-label="体重趋势图"></svg>
-      <div class="legend"><span><i></i>实际</span><span><i class="t"></i>参考线</span></div>
+      <div class="axis"><span>11/2</span><span>11/30 健身房</span><span>12/31</span></div>
+      <div class="legend"><span><i class="d"></i>每天</span><span><i></i>7 天平均</span><span><i class="t"></i>91 → 85 目标线</span></div>
     </div>
   </header>
   <div id="banner">这个打开方式不支持自动保存。用浏览器(Chrome / Safari)打开这个文件就能自动保存;或者在页面底部「备份数据」里把记录导出保存。</div>
+  <div id="today"></div>
   <div id="timeline"></div>
+  <div id="extra"></div>
+  <details id="weekly">
+    <summary>本周小结 · 发给 Claude</summary>
+    <p>每周日生成一次,复制后连同 1–2 天的饮食照片一起发给 Claude。照片从正上方拍,让手或筷子入镜做参照。</p>
+    <div class="btns"><button type="button" class="btn" id="wMake">生成本周小结</button><button type="button" class="btn" id="wPrev">上一周</button></div>
+    <textarea id="wText" readonly placeholder="点「生成本周小结」"></textarea>
+  </details>
   <details id="sync">
     <summary>多设备同步 <span id="sStat"></span></summary>
     <p>手机和电脑要看到同一份记录时用。去 <a href="https://jsonbin.io" target="_blank" rel="noopener">jsonbin.io</a> 免费注册,建一个内容为 <code>{}</code> 的 Bin,再建一个有读写权限的 Access Key,把两项填在下面。每台设备填一次,只存在本机,不会进仓库。</p>
     <div class="field"><label>Bin ID</label><input type="text" id="sBin" placeholder="像 68a1f0c3ae5..." autocomplete="off"></div>
     <div class="field"><label>Access Key</label><input type="password" id="sKey" placeholder="$2a$10$..." autocomplete="off"></div>
     <div class="btns">
-      <button type="button" id="sSave">保存并同步</button>
-      <button type="button" id="sNow">立即同步</button>
-      <button type="button" id="sOff">关闭</button>
+      <button type="button" class="btn" id="sSave">保存并同步</button>
+      <button type="button" class="btn" id="sNow">立即同步</button>
+      <button type="button" class="btn" id="sOff">关闭</button>
     </div>
   </details>
   <details id="backup">
     <summary>备份数据 <span id="bNag"></span></summary>
     <p>换手机、换浏览器、或上面提示不能自动保存时用。导出后把这段文字存到备忘录,以后粘贴回来即可恢复。</p>
     <div class="btns">
-      <button type="button" id="bExport">导出</button>
-      <button type="button" id="bImport">导入</button>
+      <button type="button" class="btn" id="bExport">导出</button>
+      <button type="button" class="btn" id="bImport">导入</button>
     </div>
     <textarea id="bText" placeholder="点「导出」生成备份文字;或把之前的备份粘贴到这里再点「导入」"></textarea>
   </details>
   <footer>
-    出现腿麻、手麻、下肢放射痛就停止训练并就医。
+    出现腿麻、手麻、下肢放射痛就停止训练并就医。<br>
+    动作图片来自 <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">free-exercise-db</a>(公共领域)。
   </footer>
 </div>
 <div id="status"></div>
 
 <script>
-const FIG={"上斜俯卧撑": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"74\" y=\"62\" width=\"42\" height=\"22\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><path d=\"M8 82 L40 66 L70 48\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M8 82 L26 74\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 48 L76 56 L80 62\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"80\" cy=\"40\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M100 44 L100 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(100,58) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "坐姿哑铃肩推": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M44 62 L78 62\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M76 62 L76 32\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 60 L46 62 L42 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 60 L66 38\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"65\" cy=\"28\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M66 40 L50 38 L46 18\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(45,16) rotate(0)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M66 40 L56 40 L54 22\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M94 40 L94 20\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(94,20) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "仰卧哑铃臂屈伸": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M22 80 L42 62 L64 78\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M64 78 L88 78\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"78\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M86 78 L86 50 L70 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(68,43) rotate(90)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M64 34 L88 34\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(88,34) rotate(0.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "哑铃侧平举": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"60\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 26 L60 56\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L52 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L68 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 32 L44 32 L28 34\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(26,34) rotate(90)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M60 32 L76 32 L92 34\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(94,34) rotate(90)\"><rect x=\"-2\" y=\"-6\" width=\"4\" height=\"12\" rx=\"1.5\" fill=\"#16211F\"/><rect x=\"-5\" y=\"-4.5\" width=\"10\" height=\"9\" rx=\"2\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/></g><path d=\"M26 58 L26 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(26,44) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M94 58 L94 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(94,44) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "高脚杯深蹲": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M44 84 L66 60 L34 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L42 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"44\" cy=\"17\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M42 30 L54 36 L54 34\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(58,34)\"><path d=\"M-4 -4 A5 5 0 0 1 4 -4\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/><circle cx=\"0\" cy=\"3\" r=\"6\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.8\"/></g><path d=\"M96 42 L96 64\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(96,64) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "后撤步弓步": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 52 L40 64 L28 80 L22 84\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M72 84 L72 62 L60 52\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 52 L60 30\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"60\" cy=\"22\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 34 L54 44 L52 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M96 52 L96 72\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(96,72) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "单腿臀桥": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"18\" cy=\"76\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M26 76 L56 60\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L76 66 L76 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L72 52 L88 46\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 76 L38 82\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M50 82 L50 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(50,58) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "靠墙静蹲": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 6 L30 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 26 L34 60 L66 60 L66 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"34\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M38 34 L56 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M58 60 L58 68 L66 68\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M88 44 L88 60\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(88,60) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "坐姿弹力带划船": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"24\" y=\"74\" width=\"24\" height=\"8\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><path d=\"M34 72 L58 68 L80 74\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M80 74 L82 64\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 72 L32 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"31\" cy=\"35\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M33 46 L44 54 L54 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M54 58 Q70 66 80 68\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><path d=\"M66 42 L46 42\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(46,42) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "弹力带扩胸": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"60\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 26 L60 56\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L52 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 56 L68 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 32 L44 32 L26 42\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 32 L76 32 L94 42\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 42 Q60 42 94 42\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><path d=\"M22 26 L10 26\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(10,26) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M98 26 L110 26\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(110,26) rotate(0.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "单臂壶铃划船": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"88\" y=\"56\" width=\"28\" height=\"28\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><path d=\"M26 84 L30 68 L34 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L72 48\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"84\" cy=\"44\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M72 49 L84 54 L92 56\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M70 50 L68 62 L66 72\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(66,76)\"><path d=\"M-4 -4 A5 5 0 0 1 4 -4\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.4\"/><circle cx=\"0\" cy=\"3\" r=\"6\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.8\"/></g><path d=\"M50 76 L50 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(50,58) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "靠墙天使": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"20\" y=\"4\" width=\"80\" height=\"80\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><circle cx=\"60\" cy=\"20\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 28 L60 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 58 L54 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 58 L66 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 34 L44 42 L40 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 34 L76 42 L80 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40 18 L40 8\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(40,8) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M80 18 L80 8\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(80,8) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "鸟狗": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"48\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M34 54 L74 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L32 68 L30 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M74 54 L80 68 L80 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L22 46 L6 40\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M74 54 L90 50 L110 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "侧平板": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"28\" cy=\"48\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M30 82 L48 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 82 L34 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 58 L68 68 L104 80\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 58 L58 64\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 42 L60 56\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(60,56) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "收下巴": "<circle cx=\"88\" cy=\"36\" r=\"13\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\"/><path d=\"M101 33 L114 36 L101 40\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"40\" cy=\"36\" r=\"13\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M53 33 L66 36 L53 40\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40 49 L40 68\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 72 L60 72\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M104 14 L58 14\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(58,14) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>", "臀桥": "<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"18\" cy=\"76\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M26 76 L56 60\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L78 66 L78 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M56 60 L72 68 L72 84\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M26 76 L38 82\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M50 82 L50 58\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(50,58) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>"};
-const VID={"上斜俯卧撑": "incline+push+up+proper+form", "坐姿哑铃肩推": "seated+dumbbell+shoulder+press+form", "仰卧哑铃臂屈伸": "lying+dumbbell+triceps+extension", "哑铃侧平举": "dumbbell+lateral+raise+form", "高脚杯深蹲": "goblet+squat+proper+form", "后撤步弓步": "reverse+lunge+proper+form", "单腿臀桥": "single+leg+glute+bridge", "靠墙静蹲": "wall+sit+exercise", "坐姿弹力带划船": "seated+resistance+band+row", "弹力带扩胸": "band+pull+apart+form", "单臂壶铃划船": "one+arm+kettlebell+row+form", "靠墙天使": "wall+angel+exercise", "鸟狗": "bird+dog+exercise+form", "侧平板": "side+plank+proper+form", "收下巴": "chin+tuck+exercise+neck", "臀桥": "glute+bridge+exercise+form"};
-function fig(n){return FIG[n]?`<svg class="fig" viewBox="0 0 120 90" aria-hidden="true">${FIG[n]}</svg>`:`<span class="fig"></span>`;}
-function vid(n){return VID[n]?`<a class="vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${VID[n]}">看示范 ↗</a>`:"";}
-const WARM=[{n:"原地踏步 / 快走",t:"3 分钟"},{n:"髋部绕环",t:"10 圈 每侧"},
-  {n:"猫牛式",t:"8 次 · 后仰别到底"},{n:"肩部绕环",t:"前后各 10 次"},{n:"空手深蹲",t:"10 次"}];
-const COOL=[{n:"仰卧腘绳肌拉伸",t:"30 秒 每侧 · 毛巾勾脚"},{n:"仰卧4字臀拉伸",t:"30 秒 每侧"},
-  {n:"扶墙股四头肌拉伸",t:"30 秒 每侧"},{n:"墙角胸部拉伸",t:"30 秒 每侧"},{n:"颈侧拉伸",t:"20 秒 每侧"}];
-const REHAB = [{n:"鸟狗",t:"每侧8秒×8"},{n:"侧平板",t:"每侧8秒×6"},{n:"收下巴",t:"5秒×10"},{n:"臀桥",t:"×15"}];
-const REHAB_LITE = [{n:"收下巴",t:"5秒×10"},{n:"臀桥",t:"×15"}];
-const LIFTS = {
-  FA:{title:"全身A · 推 + 腿",ex:[
-    {n:"上斜俯卧撑",t:"12 次 · 墙→固定台面→沙发扶手→地面",bw:true},
-    {n:"高脚杯深蹲",t:"12 次 · 下蹲3秒停1秒"},
-    {n:"弹力带扩胸",t:"20 次 · 替代面拉",band:true},
-    {n:"哑铃侧平举",t:"15 次"}]},
-  FB:{title:"全身B · 拉 + 腿",ex:[
-    {n:"坐姿弹力带划船",t:"15 次 · 垫高坐,膝微弯",band:true},
-    {n:"后撤步弓步",t:"10 次 每侧",bw:true},
-    {n:"单臂壶铃划船",t:"12 次 每侧"},
-    {n:"靠墙天使",t:"12 次",bw:true}]}
-};
-const RATE = 0.6;
-function baseW(){const w=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
-  return w.length?+w[0]:null;}
-function targetFor(i){const b=baseW();return b===null?null:+(b-RATE*(i/7)).toFixed(1);}
+const FIG={"鸟狗":"<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"48\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M34 54 L74 54\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L32 68 L30 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M74 54 L80 68 L80 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 54 L22 46 L6 40\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M74 54 L90 50 L110 44\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>","收下巴":"<circle cx=\"88\" cy=\"36\" r=\"13\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"3.2\"/><path d=\"M101 33 L114 36 L101 40\" fill=\"none\" stroke=\"#A9B6B2\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"40\" cy=\"36\" r=\"13\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M53 33 L66 36 L53 40\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40 49 L40 68\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M20 72 L60 72\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M104 14 L58 14\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(58,14) rotate(180.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>","靠墙天使":"<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"20\" y=\"4\" width=\"80\" height=\"80\" rx=\"2\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\"/><circle cx=\"60\" cy=\"20\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M60 28 L60 58\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 58 L54 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 58 L66 82\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 34 L44 42 L40 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M60 34 L76 42 L80 26\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M40 18 L40 8\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(40,8) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g><path d=\"M80 18 L80 8\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(80,8) rotate(-90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>","靠墙静蹲":"<path d=\"M6 84 L114 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 6 L30 84\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 26 L34 60 L66 60 L66 84\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"34\" cy=\"18\" r=\"7.5\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\"/><path d=\"M38 34 L56 44\" fill=\"none\" stroke=\"#16211F\" stroke-width=\"3.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M58 60 L58 68 L66 68\" fill=\"none\" stroke=\"#C3CFCC\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M88 44 L88 60\" fill=\"none\" stroke=\"#1E6B58\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><g transform=\"translate(88,60) rotate(90.0)\"><path d=\"M0 0 L-6 -3.5 L-6 3.5 Z\" fill=\"#1E6B58\"/></g>"};
+/* ================= 计划参数 ================= */
+const START="2026-11-02", GYM="2026-11-30", GOAL_DATE="2026-12-31", W_START=91, W_GOAL=85;
+const STEP_GOAL=8000;
 
-const PHASES = [
-  {name:"第1周",sub:"每个动作 1 组 · 康复目标 3 天",days:[
-    {d:"2026-10-19",type:"rest",label:"称体重 + 晚上康复 10分"},
-    {d:"2026-10-20",type:"FA",label:"全身A",s:1},
-    {d:"2026-10-21",type:"rest",label:"休息"},
-    {d:"2026-10-22",type:"FB",label:"全身B",s:1},
-    {d:"2026-10-23",type:"walk",label:"快走 30分"},
-    {d:"2026-10-24",type:"cardio",label:"有氧 40分(游泳/快走)"},
-    {d:"2026-10-25",type:"rest",label:"休息 + 导出发给 Claude"}]},
-  {name:"第2周",sub:"每个动作 2 组 · 康复目标 5 天",days:[
-    {d:"2026-10-26",type:"rest",label:"称体重 + 晚上康复 10分"},
-    {d:"2026-10-27",type:"FA",label:"全身A",s:2},
-    {d:"2026-10-28",type:"rest",label:"休息"},
-    {d:"2026-10-29",type:"FB",label:"全身B",s:2},
-    {d:"2026-10-30",type:"walk",label:"快走 30分"},
-    {d:"2026-10-31",type:"cardio",label:"有氧 40分(游泳/快走)"},
-    {d:"2026-11-01",type:"rest",label:"休息 + 导出发给 Claude"}]}
+/* 动作库:名称 → [默认量, 要点, 图(img 文件名或 FIG), YouTube 搜索词, 分组] */
+const EX={
+  "原地踏步":["2 分钟","抬膝走,手臂跟着摆。先把身体和腰背热起来,冷着身体直接练,风险不在肌肉而在腰和膝。","","marching+in+place+warm+up","热身"],
+  "猫牛式":["8 次","四点支撑,拱背和塌腰交替,配合呼吸慢慢做。**塌腰那一下不要做到最大**——腰椎过伸是你要避开的方向。","cat","cat+cow+exercise+form","热身"],
+  "鸟狗":["每侧 6 次 · 停 5 秒","对侧手脚同时伸出,背上像放着一杯水,不塌不转。练的是腰椎稳定,对滑脱最友好的核心动作之一。","FIG","bird+dog+exercise+form","热身"],
+  "收下巴":["5 秒 × 10","下巴水平往后收,做出双下巴——不是低头。坐办公室想起来就做,对付头前伸。","FIG","chin+tuck+exercise+neck","热身"],
+  "臀桥":["15 次","脚跟发力把髋顶起,顶点夹臀 1 秒。**用屁股不是用腰**:顶到大腿和身体成一条直线就停,不要往上拱腰。","bridge","glute+bridge+exercise+form","热身"],
+  "弹力带拉开":["15–20 次","双手握带与肩同宽,手臂微弯向两侧拉开,肩胛骨往中间夹。改善圆肩最直接的动作,不需要任何固定点。","pullapart","band+pull+apart+form","热身"],
+  "空手深蹲":["10 次","不拿器械,预演深蹲轨迹,顺便检查右膝今天状态。","squat","bodyweight+squat+proper+form","热身"],
+
+  "哑铃地板卧推":["12 次","躺在垫子上,屈膝踩地,两手各一个 6kg 哑铃。上臂下放碰到地面就推起——地板替你限制了幅度,肩和腰都安全。练胸的主力动作。","floorpress","dumbbell+floor+press","力量"],
+  "上斜俯卧撑":["尽量多 · 留 2 次余力","手撑**厨房台面**(固定不会动的地方),身体一条直线,全程收腹,腰不能塌——塌腰会直接刺激滑脱。台面越低越难:台面 → 矮柜 → 跪姿地面 → 标准地面。","inclinepu","incline+push+up+proper+form","力量"],
+  "高脚杯深蹲":["12 次 · 下蹲 3 秒","壶铃抱在胸前,下蹲 3 秒、底部停 1 秒、站起。重量固定就靠慢来加难度。右膝有感觉就蹲浅一点。","goblet","goblet+squat+proper+form","力量"],
+  "哑铃侧平举":["12 次","手肘微弯,抬到与肩同高就停,不要耸肩、不要甩。6kg 有点重的话先做到 10 次,质量优先。","lateral","dumbbell+lateral+raise+form","力量"],
+  "死虫":["每侧 8 次","仰卧,手臂朝天、膝盖 90°。对侧手脚慢慢放低,**下背始终贴住地面**,离地了就缩小幅度。练腹部又不伤腰,替代卷腹。","deadbug","dead+bug+exercise+form","力量"],
+  "单臂壶铃划船":["每侧 12 次","前后分腿站,同侧手扶在前腿大腿上撑住,背平,另一手把壶铃(或哑铃)拉向髋部。**不用椅子**,不转腰。先收肩胛再拉肘。","kbrow","one+arm+kettlebell+row+staggered+stance","力量"],
+  "后撤步弓步":["每侧 8 次","**向后**撤步,不要向前跨——前跨落地冲击大,右膝受不起。前膝对准脚尖。第 3 周起双手各拿一个哑铃。","revlunge","reverse+lunge+proper+form","力量"],
+  "单腿臀桥":["每侧 10 次","双腿臀桥轻松做满 15 次之后的进阶。顶点夹臀 1 秒,腰不要往上顶过头。","slbridge","single+leg+glute+bridge","力量"],
+  "靠墙天使":["10 次","后脑、上背、手臂贴墙上下滑,哪里离墙了就停在那里。对付圆肩和头前伸。","FIG","wall+angel+exercise","力量"],
+  "侧平板":["每侧 20–30 秒","手肘在肩膀正下方,身体一条直线。做不动就用跪姿版。练腰方肌,对滑脱的稳定性帮助最大。","sideplank","side+plank+proper+form","力量"],
+  "平板支撑":["30 秒","前臂撑地,臀部不要翘也不要塌,收腹夹臀。腰开始酸就停,宁可短一点。","plank","plank+proper+form","力量"],
+
+  "仰卧腘绳肌拉伸":["每侧 30 秒","躺着用毛巾或弹力带勾住脚掌往身体方向拉。**绝不要站着弯腰摸脚趾**——那是对滑脱最糟的一种拉伸。","hamstring","supine+hamstring+stretch+towel","拉伸"],
+  "跪姿髋屈肌拉伸":["每侧 30 秒","单膝跪地(膝下垫垫子),**先夹臀、骨盆微微后卷**,再把身体轻轻前移,感觉后腿大腿根前侧被拉开。不要塌腰往前顶。久坐和骨盆前倾的人最需要这个。","hipflexor","kneeling+hip+flexor+stretch+posterior+tilt","拉伸"],
+  "婴儿式":["40 秒","跪坐,臀部坐向脚跟,手往前伸,额头放垫子上,深呼吸。腰背放松。","child","child+pose+stretch","拉伸"],
+  "弹力带胸肩拉伸":["慢做 8 次","双手宽握弹力带,手臂伸直,从身前慢慢举过头顶再回来,打开胸口和肩前侧。**肋骨往下收,不要用拱腰来代偿**。替代门框拉伸。","chest","band+shoulder+dislocate+stretch","拉伸"],
+  "仰卧4字臀拉伸":["每侧 30 秒","仰卧,一脚踝搭在对侧膝上成 4 字,双手抱住下面那条大腿往胸口带。","","figure+4+stretch+supine","拉伸"],
+  "靠墙静蹲":["40 秒","膝盖不舒服那天替代深蹲和弓步,零冲击。大腿角度不低于 90°。","FIG","wall+sit+exercise","备选"]
+};
+
+const WARM=["原地踏步","猫牛式","鸟狗","收下巴","臀桥","弹力带拉开","空手深蹲"];
+const COOL=["仰卧腘绳肌拉伸","跪姿髋屈肌拉伸","婴儿式","弹力带胸肩拉伸","仰卧4字臀拉伸"];
+const CORE=[["死虫","2 组 × 每侧 8 次"],["侧平板","2 组 × 每侧 20 秒"]];
+
+const LIFTS={
+  A:{title:"A · 胸 + 腿",short:"A 胸 + 腿",ex:[
+    {n:"哑铃地板卧推"},{n:"上斜俯卧撑",bw:true},{n:"高脚杯深蹲"},{n:"哑铃侧平举"},{n:"死虫",bw:true}],
+    note:"两两一组交替做:卧推 ↔ 俯卧撑,深蹲 ↔ 侧平举,最后死虫。组间休息 45 秒。"},
+  B:{title:"B · 背 + 体态",short:"B 背 + 体态",ex:[
+    {n:"单臂壶铃划船"},{n:"弹力带拉开",band:true},{n:"后撤步弓步"},{n:"臀桥",alt:"单腿臀桥"},{n:"靠墙天使",bw:true},{n:"侧平板",sec:true}],
+    note:"划船 ↔ 弹力带拉开,弓步 ↔ 臀桥,最后靠墙天使和侧平板。组间休息 45 秒。"}
+};
+const CIRCUIT=["高脚杯深蹲","上斜俯卧撑","单臂壶铃划船","臀桥","哑铃地板卧推","平板支撑"];
+
+/* 跳操:都是标注“无跳跃 / 低冲击”的视频 */
+const VIDEOS=[
+  {id:"5uDkkt7r9fA",t:"Pamela Reif · 10 分钟舞蹈有氧,无跳跃,膝盖友好",m:10},
+  {id:"gFeEUq2624Q",t:"Pamela Reif · 10 分钟静音有氧,无跳跃,不扰邻",m:10},
+  {id:"S2PUPaqjjB4",t:"18 分钟低冲击舞蹈有氧,无跳跃,适合公寓",m:18},
+  {id:"DMAxIrCAAZ0",t:"20 分钟有氧操 Move To The Beat,全程站立低冲击",m:20},
+  {id:"YaJryQEsT94",t:"Fitness Blender · Quiet Cardio,低冲击无弹跳",m:0}
 ];
-const ALLDAYS = PHASES.flatMap(p=>p.days);
-const WD = ["日","一","二","三","四","五","六"];
-const KEY = "fitlog-v1";
-const BKEY = "fitlog-bak";
-const SKEY = "fitlog-sync";
-const API  = "https://api.jsonbin.io/v3/b/";
+
+/* 4 周:每周的组数 / 跳操时长 / 循环轮数 */
+const WEEKS=[
+  {name:"第1周",sub:"适应周 · 每个动作 2 组 · 跳操 20 分 · 循环 3 轮",s:2,cardio:20,rounds:3,work:"40 秒做 / 20 秒歇"},
+  {name:"第2周",sub:"每个动作 3 组 · 跳操 20 分 · 循环 4 轮",s:3,cardio:20,rounds:4,work:"40 秒做 / 20 秒歇"},
+  {name:"第3周",sub:"3 组 · 下放放慢到 3 秒 · 俯卧撑降低台面 · 臀桥换单腿 · 跳操 25 分",s:3,cardio:25,rounds:4,work:"45 秒做 / 15 秒歇",alt:true},
+  {name:"第4周",sub:"3 组 · 弓步拿哑铃 · 跳操 25–30 分 · 循环 4 轮",s:3,cardio:28,rounds:4,work:"45 秒做 / 15 秒歇",alt:true}
+];
+/* 周一 A · 周二 跳操 · 周三 休 · 周四 B · 周五 跳操 · 周六 C · 周日 休 */
+const WEEK_TPL=[["A"],["cardio"],["rest"],["B"],["cardio"],["C"],["rest","sun"]];
+
+function addDays(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function dayDiff(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5);}
+
+const PHASES=WEEKS.map((w,wi)=>({name:w.name,sub:w.sub,wk:w,days:WEEK_TPL.map((t,di)=>{
+  const d=addDays(START,wi*7+di), type=t[0];
+  let label = type==="A"?"力量 A · 胸 + 腿":type==="B"?"力量 B · 背 + 体态":type==="C"?"力量 C · 全身循环":
+              type==="cardio"?`低冲击跳操 ${w.cardio} 分 + 核心`:"休息 · 走够 8000 步";
+  const extra=[];
+  if(di===0)extra.push("称重 + 量腰围");
+  if(t[1]==="sun"){extra.push("发周小结");if(wi===1||wi===3)extra.push("拍体态照");}
+  return {d,type,label,extra,wi,sun:t[1]==="sun"};
+})}));
+const ALLDAYS=PHASES.flatMap(p=>p.days);
+const TRAIN_DAYS=ALLDAYS.filter(d=>d.type!=="rest");
+
+/* ================= 存储 / 同步 ================= */
+const WD=["日","一","二","三","四","五","六"];
+const KEY="fitlog-v2";
+const BKEY="fitlog-bak";
+const SKEY="fitlog-sync";
+const API="https://api.jsonbin.io/v3/b/";
 let SYNC=null, pushTimer=null;
 function sStat(t,err){const el=document.getElementById("sStat");
   if(el){el.textContent=t?("· "+t):"";el.style.color=err?"#A8453A":"#1E6B58";}}
@@ -307,6 +404,7 @@ function hhmm(){return new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",min
 function mergeIn(rec){
   if(!rec||typeof rec!=="object")return;
   Object.keys(rec).forEach(k=>{
+    if(k<START)return; // 11/2 之前的旧计划数据不再导入
     const a=DATA[k], b=rec[k];
     if(!b||typeof b!=="object")return;
     if(!a){DATA[k]=b;return;}
@@ -322,7 +420,7 @@ async function pull(silent){
     const j=await r.json();
     mergeIn(j.record);
     await sSet(KEY,JSON.stringify(DATA));
-    document.getElementById("timeline").innerHTML="";render();initJump();
+    render();
     sStat("已同步 "+hhmm());
   }catch(e){sStat("读取失败 "+e.message,true);}
 }
@@ -340,7 +438,6 @@ function schedulePush(){
   if(!SYNC)return;
   clearTimeout(pushTimer);pushTimer=setTimeout(push,2500);
 }
-function initJump(){}
 function initSync(){
   const bi=document.getElementById("sBin"), ke=document.getElementById("sKey");
   if(SYNC){bi.value=SYNC.bin;ke.value=SYNC.key;}
@@ -357,10 +454,10 @@ function initSync(){
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&SYNC)pull(true);});
 }
 const MEM={};
-const HAS_APP = !!(window.storage && window.storage.set);
+const HAS_APP=!!(window.storage&&window.storage.set);
 let HAS_LS=false;
 try{localStorage.setItem("__t","1");localStorage.removeItem("__t");HAS_LS=true;}catch(e){}
-let MODE = HAS_APP?"app":(HAS_LS?"local":"mem");
+let MODE=HAS_APP?"app":(HAS_LS?"local":"mem");
 async function sGet(k){
   if(MODE==="app"){try{const r=await window.storage.get(k);return r?r.value:null;}catch(e){return null;}}
   if(MODE==="local"){try{return localStorage.getItem(k);}catch(e){}}
@@ -371,9 +468,9 @@ async function sSet(k,v){
   if(MODE==="local"){try{localStorage.setItem(k,v);return true;}catch(e){MODE="mem";}}
   MEM[k]=v;return false;
 }
-let DATA = {};
+let DATA={};
 
-const todayStr = (()=>{const n=new Date();
+const todayStr=(()=>{const n=new Date();
   return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");})();
 
 function toast(msg,err){const el=document.getElementById("status");el.textContent=msg;
@@ -390,230 +487,393 @@ function save(quiet){
     if(!quiet)toast(ok?"已保存":"仅暂存,请导出备份",!ok);
     schedulePush();
     const b=document.getElementById("banner");
-    if(b) b.style.display = (MODE==="mem")?"block":"none";
+    if(b)b.style.display=(MODE==="mem")?"block":"none";
   },350);
 }
-function rec(d){ if(!DATA[d])DATA[d]={rehab:[],warm:[],cool:[],main:false,sets:{},weight:"",cardio:"",min:"",flags:[],note:""}; return DATA[d]; }
+function rec(d){if(!DATA[d])DATA[d]={warm:[],cool:[],core:[],circ:[],main:false,sets:{},food:{},flags:[]};return DATA[d];}
 
+/* ================= 计算 ================= */
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const md=s=>s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+function planDay(d){return ALLDAYS.find(x=>x.d===d)||null;}
 function isDone(day){
-  const r=DATA[day.d]; if(!r)return false;
-  const rehabOk = (r.rehab||[]).filter(Boolean).length>0;
-  if(LIFTS[day.type]||day.type==="cardio"||day.type==="walk"||day.type==="swim") return !!r.main;
-  return rehabOk;
+  const r=DATA[day.d];if(!r)return false;
+  if(day.type==="rest")return +r.steps>=STEP_GOAL;
+  return !!r.main;
 }
+function targetOn(d){const n=dayDiff(START,d),N=dayDiff(START,GOAL_DATE);
+  return +(W_START-(W_START-W_GOAL)*Math.max(0,Math.min(n,N))/N).toFixed(1);}
+function weights(){return Object.keys(DATA).filter(k=>k>=START&&DATA[k]&&+DATA[k].weight>0).sort()
+  .map(k=>({d:k,w:+DATA[k].weight}));}
+function avg7(d,ws){const a=ws.filter(p=>p.d<=d&&dayDiff(p.d,d)<7);
+  return a.length?a.reduce((s,p)=>s+p.w,0)/a.length:null;}
 function lastLoad(exName,beforeDate){
   const dates=Object.keys(DATA).filter(d=>d<beforeDate).sort().reverse();
   for(const d of dates){const s=DATA[d].sets&&DATA[d].sets[exName];
     if(s&&s.some(x=>x&&x.kg))return s.filter(x=>x&&x.kg).map(x=>x.kg).join("/");
-    if(s&&s.some(x=>x&&x.reps))return s.filter(x=>x&&x.reps).map(x=>x.reps).join("/")+"次";}
+    if(s&&s.some(x=>x&&x.reps))return s.filter(x=>x&&x.reps).map(x=>x.reps).join("/")+(LIFTS.B.ex.some(e=>e.n===exName&&e.sec)?"秒":"次");}
   return null;
 }
+const MEALS=[["b","早餐",["蛋白质够","有蔬菜","主食≤1拳"]],["l","午餐",["蛋白质够","蔬菜2拳","主食≤1拳"]],["d","晚餐",["蛋白质够","蔬菜2拳","主食≤半拳"]]];
+const HABITS=["晚饭 8 点前吃完","没吃夜宵/甜饮"];
+const FOOD_MAX=MEALS.reduce((s,m)=>s+m[2].length,0)+HABITS.length;
+function foodScore(r){if(!r||!r.food)return 0;let n=0;
+  MEALS.forEach(m=>(r.food[m[0]]||[]).forEach(v=>{if(v)n++;}));
+  (r.food.h||[]).forEach(v=>{if(v)n++;});return n;}
 
-
-const LIB=[
- {g:"全身A",items:[
-  ["上斜俯卧撑","12 次","全程绷紧腹部,腰不能塌——塌腰是直接刺激滑脱的动作。难度顺序:靠墙 → 固定台面/窗台 → 沙发扶手 → 地面。别用餐桌,会滑会晃。","incline+push+up+proper+form"],
-  ["高脚杯深蹲","12 次","壶铃抱在胸前。下蹲 3 秒、底部停 1 秒,靠慢制造难度不靠重量。右膝有感觉就减小深度。","goblet+squat+proper+form"],
-  ["弹力带扩胸","20 次","手臂微弯,肩胛骨向中间夹。这个替代面拉,是改善圆肩和颈椎前伸最有效的动作,不需要任何固定点。","band+pull+apart+form"],
-  ["哑铃侧平举","15 次","手肘微弯,抬到与肩同高就停,不要耸肩。5kg 对你正好。","dumbbell+lateral+raise+form"]]},
- {g:"全身B",items:[
-  ["坐姿弹力带划船","15 次","屁股下垫垫子、膝盖微弯,不然腘绳肌会把你的腰拉圆。先收肩胛,再拉肘。","seated+resistance+band+row"],
-  ["后撤步弓步","10 次 每侧","向后撤步,不要向前跨。前跨落地时对膝盖的冲击大很多,你的右膝受不起。","reverse+lunge+proper+form"],
-  ["单臂壶铃划船","12 次 每侧","一手扶椅面(只是撑,没有拉扯力),背保持平的,不要转腰。","one+arm+kettlebell+row+form"],
-  ["靠墙天使","12 次","后脑、上背、手臂贴墙上下滑,哪里离墙了就停在那里。直接对抗颈椎生理曲度变直。","wall+angel+exercise"]]},
- {g:"康复四件套 · 目标每周5天",items:[
-  ["鸟狗","每侧8秒×8","背上像放着一杯水,不塌不转。伸出的手和腿是对侧的。","bird+dog+exercise+form"],
-  ["侧平板","每侧8秒×6","做不动就用跪姿版。练腰方肌,对你的滑脱稳定性帮助最大。","side+plank+proper+form"],
-  ["收下巴","5秒×10 每天3组","下巴水平往后收,做出双下巴——不是低头。坐办公室想起来就做。","chin+tuck+exercise+neck"],
-  ["臀桥","×15","臀部发力把髋顶起来,不是靠腰。轻松做满 15 次之后,换成下面的单腿臀桥。","glute+bridge+exercise+form"]]},
- {g:"热身 · 训练前 6 分钟",items:[
-  ["原地踏步 / 快走","3 分钟","最重要的一步。冷着身体直接练,风险不在肌肉在你的腰和膝。","marching+in+place+warm+up"],
-  ["髋部绕环","10 圈 每侧","扶着椅背单腿画圈,把髋关节打开。深蹲和弓步之前必做。","hip+circles+warm+up+exercise"],
-  ["猫牛式","8 次","四点支撑,拱背和塌腰交替。缓慢,**后仰不要做到最大** —— 腰椎过伸是你要避开的方向。","cat+cow+exercise+form"],
-  ["肩部绕环","前后各 10 次","肩胛骨画大圈,幅度到位就行,不用快。","shoulder+circles+warm+up"],
-  ["空手深蹲","10 次","不拿壶铃,纯粹预演动作轨迹,顺便检查膝盖今天状态如何。","bodyweight+squat+proper+form"]]},
- {g:"拉伸 · 训练后 5 分钟",items:[
-  ["仰卧腘绳肌拉伸","30 秒 每侧","躺着,毛巾勾住脚掌往身体方向拉。**绝不要站着弯腰摸脚趾** —— 那是对滑脱最糟的一种拉伸。","supine+hamstring+stretch+towel"],
-  ["仰卧4字臀拉伸","30 秒 每侧","仰卧,一脚踝搭在对侧膝上成4字,双手抱住下面那条大腿往胸口带。","figure+4+stretch+supine"],
-  ["扶墙股四头肌拉伸","30 秒 每侧","扶墙站稳,手抓同侧脚踝往臀部带,膝盖朝下不外翻。","standing+quad+stretch+form"],
-  ["墙角胸部拉伸","30 秒 每侧","手肘撑墙角或门框,身体前倾。改善圆肩,配合靠墙天使一起做。","doorway+chest+stretch"],
-  ["颈侧拉伸","20 秒 每侧","头侧倒,同侧手轻放头顶,只用手的重量,不要用力压。","lateral+neck+stretch+gentle"]]},
- {g:"备选 · 暂时不排进计划",items:[
-  ["单腿臀桥","12 次 每侧","双腿臀桥做够 15 次不吃力之后的进阶。顶点夹紧臀部 1 秒,腰不要往上顶过头。","single+leg+glute+bridge"],
-  ["坐姿哑铃肩推","12 次","肩膀练熟之后可以加。背靠椅背,下巴微收,不要仰头看哑铃。","seated+dumbbell+shoulder+press+form"],
-  ["仰卧哑铃臂屈伸","15 次","想单独练手臂时加。躺着做,腰完全贴地,只有肘关节动。","lying+dumbbell+triceps+extension"],
-  ["靠墙静蹲","40 秒","膝盖不舒服那天的替代动作,零冲击。大腿角度不低于 90°。","wall+sit+exercise"]]}];
-const EXID={};LIB.forEach((g,gi)=>g.items.forEach((it,i)=>{EXID[it[0]]="ex-"+gi+"-"+i;}));
-function jump(n){return EXID[n]?`<a class="q" href="#${EXID[n]}" onclick="return goEx('${EXID[n]}')">图</a>`:"";}
+/* ================= 图示 ================= */
+function picHTML(n){const e=EX[n];if(!e||!e[2])return "";
+  if(e[2]==="FIG")return FIG[n]?`<svg viewBox="0 0 120 90" aria-hidden="true">${FIG[n]}</svg>`:"";
+  return `<img src="img/${e[2]}.webp" alt="${esc(n)}示范" loading="lazy">`;}
+function thumb(n){const p=picHTML(n);
+  return p?`<button type="button" class="thumb" onclick="goEx('${exId(n)}')" aria-label="查看${esc(n)}要点">${p}</button>`:`<span class="thumb empty"></span>`;}
+function exId(n){return "ex-"+Object.keys(EX).indexOf(n);}
 function goEx(id){const el=document.getElementById(id);
   if(el){el.scrollIntoView({block:"center",behavior:"smooth"});
     el.style.borderColor="#1E6B58";setTimeout(()=>el.style.borderColor="",1600);}
   return false;}
-function renderLib(){
-  let h=`<section class="phase" id="lib"><div class="phase-head"><h2>动作库</h2><span>16 个动作 · 图示与要点</span></div>`;
-  LIB.forEach(g=>{
-    h+=`<h3 class="gh">${g.g}</h3>`;
-    g.items.forEach(it=>{
-      h+=`<div class="libcard${FIG[it[0]]?"":" nofig"}" id="${EXID[it[0]]}">${FIG[it[0]]?fig(it[0]):""}<div>
-        <div class="ex-name"><b>${it[0]}</b><span class="target">${it[1]}</span></div>
-        <p>${it[2]}</p>${vid(it[0])}</div></div>`;
-    });
-  });
-  return h+`</section>`;
+function vid(n){const e=EX[n];return e&&e[3]?`<a class="vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${e[3]}">看示范视频 ↗</a>`:"";}
+
+/* ================= 渲染 ================= */
+function render(){
+  renderToday();
+  renderTimeline();
+  document.getElementById("extra").innerHTML=renderGym()+renderFood()+renderLib();
+  updateMeter();
+  drawChart();
+}
+function updateMeter(){
+  const ws=weights();
+  const last=ws.length?ws[ws.length-1]:null;
+  const a=last?avg7(last.d,ws):null;
+  document.getElementById("mNow").textContent=a?a.toFixed(1):"—";
+  document.getElementById("mDone").textContent=TRAIN_DAYS.filter(isDone).length;
+  document.getElementById("mTot").textContent=TRAIN_DAYS.length;
+  const ref=todayStr<START?W_START:targetOn(todayStr);
+  let sub=`7 天平均 · 今天参考线 ${ref.toFixed(1)} kg`;
+  if(a){const diff=a-targetOn(last.d);sub+=diff>0.05?` · 比参考线高 ${diff.toFixed(1)}`:" · 在参考线以下 ✓";}
+  else sub+=" · 早上空腹、上完厕所再称";
+  document.getElementById("mSub").textContent=sub;
 }
 
-function render(){
+function renderToday(){
+  const box=document.getElementById("today");
+  let d=todayStr, title="今天", day=planDay(d);
+  if(d<START){d=START;day=planDay(d);title="明天开始";}
+  const dt=new Date(d+"T00:00:00");
+  const label=day?day.label:(d<GYM?"":"健身房阶段 · 每日记录");
+  box.innerHTML=`<div class="todayhead"><h2>${title}</h2><span>${dt.getMonth()+1}/${dt.getDate()} 周${WD[dt.getDay()]} · ${esc(label)}</span></div>
+    <div class="todaycard" id="todaycard"></div>`;
+  const card=box.querySelector("#todaycard");
+  buildPanel(card,day||{d,type:"log",label,extra:[]},true);
+}
+
+function renderTimeline(){
   const tl=document.getElementById("timeline");tl.innerHTML="";
   PHASES.forEach(ph=>{
-    const done=ph.days.filter(isDone).length;
+    const td=ph.days.filter(x=>x.type!=="rest"),done=td.filter(isDone).length;
     const sec=document.createElement("section");sec.className="phase";
-    sec.innerHTML=`<div class="phase-head"><h2>${ph.name}</h2><span>${ph.sub}</span><em>${done}/${ph.days.length}</em></div>`;
+    sec.innerHTML=`<div class="phase-head"><h2>${ph.name}</h2><span>${ph.sub}</span><em>${done}/${td.length}</em></div>`;
     const rail=document.createElement("div");rail.className="rail";
     ph.days.forEach(day=>rail.appendChild(dayEl(day)));
     sec.appendChild(rail);tl.appendChild(sec);
   });
-  tl.insertAdjacentHTML("beforeend",renderLib());
-  const total=ALLDAYS.filter(isDone).length;
-  document.getElementById("mDone").textContent=total;
-  document.getElementById("mTot").textContent=ALLDAYS.length;
-  const gt=targetFor(ALLDAYS.length-1);
-  document.getElementById("mGoal").textContent=gt===null?"填体重后显示":gt.toFixed(1)+" kg";
-  const ws=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
-  document.getElementById("mNow").textContent=ws.length?Number(ws[ws.length-1]).toFixed(1):"—";
-  drawChart();
 }
 
 function dayEl(day){
-  const r=rec(day.d), dt=new Date(day.d+"T00:00:00");
+  const dt=new Date(day.d+"T00:00:00");
+  const isToday=day.d===todayStr||(todayStr<START&&day.d===START);
   const wrap=document.createElement("div");
-  wrap.className="day"+(isDone(day)?" ok":"")+(day.d===todayStr?" today":"");
-  const md=(dt.getMonth()+1)+"/"+dt.getDate();
+  wrap.className="day"+(isDone(day)?" ok":"")+(isToday?" today":"")+(day.type==="rest"?" rest":"");
+  const mdt=(dt.getMonth()+1)+"/"+dt.getDate();
+  const ex=day.extra.length?` <em style="font-style:normal;font-size:12px;color:var(--amber)">· ${day.extra.join(" · ")}</em>`:"";
   wrap.innerHTML=`<div class="node"></div>
     <button class="row" type="button">
-      <span class="date">${md} ${WD[dt.getDay()]}</span>
-      <span class="task">${day.label}</span>
-      ${day.d===todayStr?'<span class="tag">今天</span>':''}
+      <span class="date">${mdt} ${WD[dt.getDay()]}</span>
+      <span class="task">${day.label}${ex}</span>
+      ${isToday?`<span class="tag">${day.d===todayStr?"今天":"明天"}</span>`:""}
       <span class="chev">›</span>
     </button><div class="panel"></div>`;
   const panel=wrap.querySelector(".panel");
   wrap.querySelector(".row").onclick=()=>{
-    if(!wrap.classList.contains("open")&&!panel.dataset.built){buildPanel(panel,day,r);panel.dataset.built="1";}
+    if(isToday){document.getElementById("today").scrollIntoView({behavior:"smooth"});return;}
+    if(!wrap.classList.contains("open")&&!panel.dataset.built){buildPanel(panel,day,false);panel.dataset.built="1";}
     wrap.classList.toggle("open");
   };
-  if(day.d===todayStr){buildPanel(panel,day,r);panel.dataset.built="1";wrap.classList.add("open");}
   return wrap;
 }
 
-function checklist(key,title,list,r){
-  let h=`<div class="block"><h3>${title}</h3>`;
-  list.forEach((x,i)=>{h+=`<div class="rrow"><label class="chk"><input type="checkbox" data-k="${key}" data-i="${i}"${r[key]&&r[key][i]?" checked":""}><span>${x.n} <em>${x.t}</em></span></label>${jump(x.n)}</div>`;});
-  if(key==="cool")h+=`<div class="note">弯腰摸脚趾永远不做——腰椎无支撑被动屈曲,对滑脱最糟。拉腘绳肌躺着用毛巾勾脚。</div>`;
-  return h+`</div>`;
+function checkRow(key,i,n,t,r){
+  const on=r[key]&&r[key][i];
+  return `<div class="rrow">${thumb(n)}<label class="chk"><input type="checkbox" data-k="${key}" data-i="${i}"${on?" checked":""}><span>${n} <em>${t||EX[n][0]}</em></span></label></div>`;
 }
-function buildPanel(p,day,r){
-  const list = day.type==="travel"?REHAB_LITE:REHAB;
-  // rehab
-  let h=`<div class="block"><h3>${day.type==="travel"?"精简康复":"康复 4 件套 · 10分钟"}</h3>`;
-  list.forEach((x,i)=>{h+=`<div class="rrow"><label class="chk"><input type="checkbox" data-k="rehab" data-i="${i}"${r.rehab&&r.rehab[i]?" checked":""}><span>${x.n} <em>${x.t}</em></span></label>${jump(x.n)}</div>`;});
-  h+=`</div>`;
 
-  const isTrain = LIFTS[day.type]||day.type==="cardio"||day.type==="walk"||day.type==="swim";
-  if(isTrain) h+=checklist("warm","热身 · 6分钟 · 训练前",WARM,r);
+function buildPanel(p,day,isTodayCard){
+  const r=rec(day.d), wk=day.wi!=null?WEEKS[day.wi]:null;
+  const train=day.type!=="rest"&&day.type!=="log";
+  let h="";
+  if(isTodayCard&&train)h+=`<div class="prog"><i id="progBar"></i></div><div class="progtxt" id="progTxt"></div>`;
+
+  if(train){
+    h+=`<div class="block"><h3>① 热身 + 康复 · 7 分钟</h3>`;
+    WARM.forEach((n,i)=>h+=checkRow("warm",i,n,null,r));
+    h+=`</div>`;
+  }
+
   if(LIFTS[day.type]){
-    const L=LIFTS[day.type];const NS=day.s||3;
-    h+=`<div class="block"><h3>${L.title}</h3>`;
+    const L=LIFTS[day.type],NS=wk.s;
+    h+=`<div class="block"><h3>② ${L.title} · 25 分钟 · 每个动作 ${NS} 组</h3>`;
     L.ex.forEach(e=>{
-      const prev=lastLoad(e.n,day.d);
-      const s=(r.sets&&r.sets[e.n])||[];
-      h+=`<div class="ex"><div class="ex-name"><b>${e.n}</b>${jump(e.n)}<span class="target">${NS} 组 × ${e.t}</span>${prev?`<span class="last">上次 ${prev}</span>`:""}</div><div class="sets">`;
+      const n=(e.alt&&wk.alt)?e.alt:e.n;
+      const prev=lastLoad(n,day.d);
+      const s=(r.sets&&r.sets[n])||[];
+      h+=`<div class="ex"><div class="exhead">${thumb(n)}<div class="meta"><div class="ex-name"><b>${n}</b><span class="target">${NS} 组 × ${EX[n][0]}</span></div>${prev?`<span class="last">上次 ${prev}</span>`:""}</div></div><div class="sets">`;
       for(let i=0;i<NS;i++){
         const v=s[i]||{};
         h+=`<div class="set">`;
-        if(e.band) h+=`<input type="text" placeholder="带" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="kg" value="${(v.kg||"").toString().replace(/"/g,"&quot;")}">`;
-        else if(!e.bw) h+=`<input type="number" inputmode="decimal" placeholder="${e.sec?"秒":"kg"}" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="kg" value="${v.kg||""}"><span>${e.sec?"秒":"kg"}</span>`;
-        if(!e.sec) h+=`<input type="number" inputmode="numeric" placeholder="次" data-k="set" data-ex="${e.n}" data-i="${i}" data-f="reps" value="${v.reps||""}"><span>次</span>`;
+        if(e.band)h+=`<input type="text" placeholder="带" data-k="set" data-ex="${n}" data-i="${i}" data-f="kg" value="${esc(v.kg)}">`;
+        else if(!e.bw&&!e.sec)h+=`<input type="number" inputmode="decimal" placeholder="kg" data-k="set" data-ex="${n}" data-i="${i}" data-f="kg" value="${esc(v.kg)}"><span>kg</span>`;
+        h+=`<input type="number" inputmode="numeric" placeholder="${e.sec?"秒":"次"}" data-k="set" data-ex="${n}" data-i="${i}" data-f="reps" value="${esc(v.reps)}"><span>${e.sec?"秒":"次"}</span>`;
         h+=`</div>`;
       }
       h+=`</div></div>`;
     });
-    h+=`<label class="chk"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>这一天的力量训练完成</span></label>`;
-    h+=`<div class="note">重量固定,所以靠这三样变难:加次数 → 放慢下放速度(3秒)→ 换难度(俯卧撑降低支撑高度、弹力带站远一点或用两根)。腰、颈、右膝有任何不适,难度原地不动。</div></div>`;
+    h+=`<div class="note">${L.note}<br>重量固定,所以靠这三样变难:加次数 → 放慢下放(3 秒)→ 换更难的版本。腰、颈、右膝有任何不适,难度原地不动。</div>`;
+    h+=`<label class="chk" style="margin-top:10px"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>今天的力量训练完成</span></label></div>`;
   }
 
-  if(day.type==="cardio"||day.type==="swim"||day.type==="walk"){
-    h+=`<div class="block"><h3>有氧 ${day.type==="walk"?30:40} 分钟</h3>
-      <div class="field"><label>方式</label><select data-k="cardio">
-        ${["","楼下快走","游泳","爬楼梯(只上不下)","原地低冲击有氧","椭圆机","水中快走"].map(o=>`<option${r.cardio===o?" selected":""}>${o}</option>`).join("")}
-      </select></div>
-      <div class="field"><label>时长</label><input type="number" inputmode="numeric" data-k="min" value="${r.min||""}" placeholder="${day.type==="walk"?30:40}"><span class="hint">分钟 · 能说话但不能唱歌</span></div>
-      <label class="chk"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>有氧完成</span></label></div>`;
+  if(day.type==="C"){
+    h+=`<div class="block"><h3>② 力量 C · 全身循环 · ${wk.rounds} 轮 · ${wk.work}</h3>`;
+    CIRCUIT.forEach((n,i)=>h+=checkRow("circ",i,n,n==="单臂壶铃划船"?"左右各一半时间":n==="平板支撑"?"能撑多久撑多久":"",r));
+    h+=`<div class="field" style="margin-top:8px"><label>完成轮数</label><input type="number" inputmode="numeric" data-k="rounds" value="${esc(r.rounds)}" placeholder="${wk.rounds}"><span class="hint">6 个动作做完算 1 轮,轮间休息 1 分钟。手机开个间歇计时器跟着走。</span></div>`;
+    h+=`<div class="note">全程选一个"能做完但最后几下有点吃力"的难度。俯卧撑撑台面,深蹲抱壶铃,卧推用两个哑铃。</div>`;
+    h+=`<label class="chk" style="margin-top:10px"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>今天的循环训练完成</span></label></div>`;
   }
 
-  if(isTrain) h+=checklist("cool","拉伸 · 5分钟 · 训练后",COOL,r);
-  h+=`<div class="block"><h3>体重</h3>
-    <div class="field"><label>今日</label><input type="number" step="0.1" inputmode="decimal" data-k="weight" value="${r.weight||""}" placeholder="${(()=>{const t=targetFor(ALLDAYS.findIndex(x=>x.d===day.d));return t===null?"--":t.toFixed(1);})()}">
-    <span class="hint">${(()=>{const t=targetFor(ALLDAYS.findIndex(x=>x.d===day.d));
-      return t===null?"早上空腹。第一次填的数字会成为参考线起点":"参考 "+t.toFixed(1)+" kg · 早上空腹";})()}</span></div></div>`;
+  if(day.type==="cardio"){
+    h+=`<div class="block"><h3>② 低冲击跳操 · ${wk.cardio} 分钟</h3><div class="vids">`;
+    VIDEOS.forEach((v,i)=>{
+      h+=`<div class="vidrow${r.vid===i?" on":""}"><div class="vt">${v.t}</div>
+        <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">打开 ↗</a>
+        <button type="button" data-k="vid" data-i="${i}">${r.vid===i?"已选":"选这个"}</button></div>`;
+    });
+    h+=`</div><div class="field"><label>时长</label><input type="number" inputmode="numeric" data-k="min" value="${esc(r.min)}" placeholder="${wk.cardio}"><span class="hint">分钟 · 两个 10 分钟的可以连着做。强度:能说话,但唱不了歌。</span></div>
+      <div class="note">视频里遇到<b>跳跃、前跨弓步、深蹲跳、仰卧起坐</b>,就换成原地踏步或抬膝,跟着节奏走就行。右膝或腰一有感觉就降幅度。</div></div>`;
+    h+=`<div class="block"><h3>③ 核心 · 5 分钟</h3>`;
+    CORE.forEach((c,i)=>h+=checkRow("core",i,c[0],c[1],r));
+    h+=`<label class="chk" style="margin-top:8px"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>今天的跳操 + 核心完成</span></label></div>`;
+  }
 
+  if(train){
+    h+=`<div class="block"><h3>${day.type==="cardio"?"④":"③"} 拉伸 · 5 分钟</h3>`;
+    COOL.forEach((n,i)=>h+=checkRow("cool",i,n,null,r));
+    h+=`<div class="note">弯腰摸脚趾永远不做——腰椎无支撑被动屈曲,对滑脱最糟。拉腘绳肌躺着用毛巾勾脚。</div></div>`;
+  }
+
+  if(day.type==="rest"){
+    h+=`<div class="block"><h3>休息日</h3><p style="font-size:13px;color:#3E4C49;margin:0">不练,但要动:散步、走楼梯、去超市都算,走够 ${STEP_GOAL} 步。热量缺口主要靠吃和走,不是靠那 40 分钟。</p>`;
+    if(day.sun)h+=`<div class="note">周日复盘:在页面底部「本周小结」生成文字,连同 1–2 天的饮食照片发给 Claude。${day.extra.includes("拍体态照")?"<br><b>今天拍体态照</b>:正面 + 侧面,同一位置、同一时间(早上空腹),和 9/8 那两张对比。":""}</div>`;
+    h+=`</div>`;
+  }
+
+  // 每日记录
+  const isMon=new Date(day.d+"T00:00:00").getDay()===1;
+  h+=`<div class="block"><h3>身体数据</h3>
+    <div class="field"><label>体重</label><input type="number" step="0.1" inputmode="decimal" data-k="weight" value="${esc(r.weight)}" placeholder="${day.d<START?W_START.toFixed(1):targetOn(day.d).toFixed(1)}"><span class="hint">kg · 早上空腹、上完厕所再称 · 参考线 ${day.d<START?W_START.toFixed(1):targetOn(day.d).toFixed(1)}</span></div>
+    <div class="field"><label>步数</label><input type="number" inputmode="numeric" data-k="steps" value="${esc(r.steps)}" placeholder="${STEP_GOAL}"><span class="hint">晚上从手机健康 App 抄过来 · 目标 ${STEP_GOAL}</span></div>
+    ${isMon||r.waist?`<div class="field"><label>腰围</label><input type="number" step="0.5" inputmode="decimal" data-k="waist" value="${esc(r.waist)}" placeholder="cm"><span class="hint">cm · 每周一量:肚脐那一圈,放松站立、正常呼气后量</span></div>`:""}
+  </div>`;
+
+  // 饮食
+  h+=`<div class="block"><h3>饮食 · 手掌法 · <span class="score" data-score>${foodScore(r)}</span>/${FOOD_MAX}</h3>`;
+  MEALS.forEach(m=>{
+    const v=(r.food&&r.food[m[0]])||[];
+    h+=`<div class="meal"><b>${m[1]}</b><div class="chips">${m[2].map((t,i)=>`<button type="button" class="chip" data-k="food" data-m="${m[0]}" data-i="${i}" aria-pressed="${!!v[i]}">${t}</button>`).join("")}</div></div>`;
+  });
+  const hv=(r.food&&r.food.h)||[];
+  h+=`<div class="meal"><b>习惯</b><div class="chips">${HABITS.map((t,i)=>`<button type="button" class="chip" data-k="food" data-m="h" data-i="${i}" aria-pressed="${!!hv[i]}">${t}</button>`).join("")}</div></div>
+    <p style="font-size:11.5px;color:var(--mute);margin:4px 0 0">一掌心 = 手掌大小、厚度的肉/鱼/豆腐;一拳 = 拳头大小的饭/面。详见下方「饮食指南」。</p></div>`;
+
+  // 反馈
   h+=`<div class="block"><h3>身体反馈</h3><div class="chips">`;
-  ["都正常","腰酸","颈紧","膝痛","睡不够"].forEach(f=>{
+  ["都正常","腰酸","颈紧","膝痛","睡不够","很饿"].forEach(f=>{
     h+=`<button type="button" class="chip${f==="都正常"?"":" warn"}" data-k="flag" data-f="${f}" aria-pressed="${(r.flags||[]).includes(f)}">${f}</button>`;});
-  h+=`</div><div class="field" style="margin-top:9px"><label>备注</label><input type="text" data-k="note" value="${(r.note||"").replace(/"/g,"&quot;")}" placeholder="吃了什么 / 哪里不舒服"></div>
+  h+=`</div><div class="field" style="margin-top:9px"><label>备注</label><input type="text" data-k="note" value="${esc(r.note)}" placeholder="吃了什么 / 哪里不舒服 / 今天状态"></div>
     <div class="alarm">出现腿麻、脚无力、下肢放射痛、手指麻木 → 停止训练,尽快看医生。</div></div>`;
 
   p.innerHTML=h;
-  p.querySelectorAll("input,select").forEach(el=>{
-    const ev = el.type==="checkbox"||el.tagName==="SELECT"?"change":"input";
-    el.addEventListener(ev,()=>onChange(day,el));
+  p.querySelectorAll("input").forEach(el=>{
+    const ev=el.type==="checkbox"?"change":"input";
+    el.addEventListener(ev,()=>onChange(day,el,p));
   });
   p.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
-    const rr=rec(day.d);rr.flags=rr.flags||[];const f=c.dataset.f;
-    const on=c.getAttribute("aria-pressed")==="true";
-    if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);rr._t=Date.now();
-    c.setAttribute("aria-pressed",String(!on));save();
+    const rr=rec(day.d);const on=c.getAttribute("aria-pressed")==="true";
+    if(c.dataset.k==="flag"){rr.flags=rr.flags||[];const f=c.dataset.f;
+      if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);}
+    else{rr.food=rr.food||{};const m=c.dataset.m;rr.food[m]=rr.food[m]||[];rr.food[m][+c.dataset.i]=!on;
+      const sc=p.querySelector("[data-score]");if(sc)sc.textContent=foodScore(rr);}
+    rr._t=Date.now();c.setAttribute("aria-pressed",String(!on));save();
   }));
+  p.querySelectorAll(".vidrow button").forEach(b=>b.addEventListener("click",()=>{
+    const rr=rec(day.d),i=+b.dataset.i;rr.vid=rr.vid===i?null:i;rr._t=Date.now();
+    p.querySelectorAll(".vidrow").forEach((row,j)=>{row.classList.toggle("on",rr.vid===j);
+      row.querySelector("button").textContent=rr.vid===j?"已选":"选这个";});
+    save();
+  }));
+  if(isTodayCard)updateProg(day);
 }
 
-function onChange(day,el){
+function updateProg(day){
+  const bar=document.getElementById("progBar");if(!bar)return;
+  const r=rec(day.d);
+  const parts=[[WARM.length,(r.warm||[]).filter(Boolean).length]];
+  if(day.type==="C")parts.push([CIRCUIT.length,(r.circ||[]).filter(Boolean).length]);
+  if(day.type==="cardio")parts.push([CORE.length,(r.core||[]).filter(Boolean).length]);
+  parts.push([1,r.main?1:0],[COOL.length,(r.cool||[]).filter(Boolean).length]);
+  const tot=parts.reduce((s,x)=>s+x[0],0),got=parts.reduce((s,x)=>s+x[1],0);
+  bar.style.width=Math.round(got/tot*100)+"%";
+  document.getElementById("progTxt").textContent=r.main?`主训练已完成 · ${got}/${tot} 项`:`${got}/${tot} 项 · 从热身开始,点一项勾一项`;
+}
+
+function onChange(day,el,p){
   const r=rec(day.d),k=el.dataset.k;r._t=Date.now();
-  if(k==="rehab"||k==="warm"||k==="cool"){r[k]=r[k]||[];r[k][+el.dataset.i]=el.checked;if(k==="rehab")refresh(day);}
-  else if(k==="main"){r.main=el.checked;refresh(day);}
+  if(["warm","cool","core","circ"].includes(k)){r[k]=r[k]||[];r[k][+el.dataset.i]=el.checked;}
+  else if(k==="main"){r.main=el.checked;}
   else if(k==="set"){r.sets=r.sets||{};const ex=el.dataset.ex;r.sets[ex]=r.sets[ex]||[];
     const i=+el.dataset.i;r.sets[ex][i]=r.sets[ex][i]||{};r.sets[ex][i][el.dataset.f]=el.value;}
-  else if(k==="weight"){r.weight=el.value;
-    const ws=ALLDAYS.map(d=>DATA[d.d]&&DATA[d.d].weight).filter(Boolean);
-    document.getElementById("mNow").textContent=ws.length?Number(ws[ws.length-1]).toFixed(1):"—";
-    const gt=targetFor(ALLDAYS.length-1);
-    document.getElementById("mGoal").textContent=gt===null?"填体重后显示":gt.toFixed(1)+" kg";
-    drawChart();}
   else r[k]=el.value;
+  if(k==="weight"){updateMeter();drawChart();}
+  if(k==="main"||k==="steps")refresh();
+  if(p.id==="todaycard")updateProg(day);
   save();
 }
-function refresh(day){
-  const nodes=[...document.querySelectorAll(".day")];
-  const idx=ALLDAYS.findIndex(d=>d.d===day.d);
-  const el=nodes[idx];if(el)el.classList.toggle("ok",isDone(day));
-  document.getElementById("mDone").textContent=ALLDAYS.filter(isDone).length;
-  PHASES.forEach((ph,i)=>{const em=document.querySelectorAll(".phase-head em")[i];
-    if(em)em.textContent=ph.days.filter(isDone).length+"/"+ph.days.length;});
+function refresh(){
+  document.querySelectorAll("#timeline .day").forEach((el,i)=>el.classList.toggle("ok",isDone(ALLDAYS[i])));
+  document.querySelectorAll("#timeline .phase-head em").forEach((em,i)=>{
+    const td=PHASES[i].days.filter(x=>x.type!=="rest");em.textContent=td.filter(isDone).length+"/"+td.length;});
+  updateMeter();
 }
 
 function drawChart(){
   const svg=document.getElementById("chart"),W=320,H=104,P=6;
-  const pts=ALLDAYS.map((d,i)=>({i,d:d.d,w:DATA[d.d]&&DATA[d.d].weight?+DATA[d.d].weight:null}))
-                   .filter(p=>p.w);
-  const tk=ALLDAYS.map((d,i)=>({i,w:targetFor(i)})).filter(p=>p.w!==null);
-  const all=[...pts.map(p=>p.w),...tk.map(p=>p.w)];
-  if(!all.length){svg.innerHTML="";return;}
-  const lo=Math.min(...all)-1.2,hi=Math.max(...all)+1.2,n=ALLDAYS.length-1;
-  const X=i=>P+(i/n)*(W-2*P), Y=w=>H-P-((w-lo)/(hi-lo))*(H-2*P);
-  const path=a=>a.map((p,j)=>(j?"L":"M")+X(p.i).toFixed(1)+" "+Y(p.w).toFixed(1)).join(" ");
-  let s=`<path d="${path(tk)}" fill="none" stroke="#6C7C78" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
-  if(pts.length){
-    s+=`<path d="${path(pts)}" fill="none" stroke="#1E6B58" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>`;
-    pts.forEach(p=>{s+=`<circle cx="${X(p.i).toFixed(1)}" cy="${Y(p.w).toFixed(1)}" r="3" fill="#1E6B58" vector-effect="non-scaling-stroke"/>`;});
+  const N=dayDiff(START,GOAL_DATE);
+  const ws=weights().filter(p=>p.d<=GOAL_DATE);
+  const X=d=>P+(dayDiff(START,d)/N)*(W-2*P);
+  const vals=[W_START,W_GOAL,...ws.map(p=>p.w)];
+  const lo=Math.min(...vals)-0.8,hi=Math.max(...vals)+0.8;
+  const Y=w=>H-P-((w-lo)/(hi-lo))*(H-2*P);
+  let s=`<line x1="${X(GYM).toFixed(1)}" y1="0" x2="${X(GYM).toFixed(1)}" y2="${H}" stroke="#D3DAD8" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+  s+=`<path d="M${X(START)} ${Y(W_START).toFixed(1)} L${X(GOAL_DATE)} ${Y(W_GOAL).toFixed(1)}" fill="none" stroke="#6C7C78" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+  ws.forEach(p=>{s+=`<circle cx="${X(p.d).toFixed(1)}" cy="${Y(p.w).toFixed(1)}" r="2.2" fill="#9DBFB4"/>`;});
+  if(ws.length>1){
+    const line=ws.map((p,j)=>(j?"L":"M")+X(p.d).toFixed(1)+" "+Y(avg7(p.d,ws)).toFixed(1)).join(" ");
+    s+=`<path d="${line}" fill="none" stroke="#1E6B58" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>`;
   }
   svg.innerHTML=s;
+}
+
+/* ================= 附加板块 ================= */
+function renderGym(){
+  return `<section class="phase"><div class="phase-head"><h2>第5周起 · 健身房</h2><span>11/30 开始 · 计划待定</span></div>
+    <div class="guide"><p style="margin:0">在家 4 周把习惯养起来后再排健身房计划。想提前去的话,至少提前几天告诉 Claude,重新排。每天的体重、步数、饮食仍然在上面「今天」里记,体重曲线一直画到 12/31。</p></div></section>`;
+}
+function renderFood(){
+  const rows=[
+    ["经济饭 1 荤 2 素 · 饭减半","≈450","首选","g"],
+    ["鱼片米粉汤 Fish soup bee hoon","≈350","首选","g"],
+    ["酿豆腐 Yong tau foo(汤)","≈350","首选 · 酱少放","g"],
+    ["海南鸡饭 · 去皮 · 饭减半","≈450","原版 ≈600",""],
+    ["鸡肉沙爹 10 串","≈450","花生酱另蘸,少蘸",""],
+    ["云吞面(干)","≈500","偶尔",""],
+    ["椰浆饭 Nasi lemak","≈650","少吃","b"],
+    ["叻沙 Laksa","≈650","每周最多 1 次","b"],
+    ["印度煎饼 Roti prata 2 片 + 咖喱","≈550","少吃","b"],
+    ["炒粿条 Char kway teow","≈750","尽量不点","b"]];
+  const drinks=[["Kopi O / Teh O kosong","≈5","不加奶不加糖 · 首选","g"],["Kopi C kosong","≈40","加淡奶不加糖",""],
+    ["Kopi / Teh(炼乳 + 糖)","≈130","每天最多 1 杯","b"],["Teh tarik / 冰美禄","≈150–200","当成甜品","b"],["甘蔗汁 / 果汁","≈250","不喝","b"]];
+  const tr=a=>a.map(x=>`<tr><td>${x[0]}</td><td class="k">${x[1]}</td><td class="${x[3]}">${x[2]}</td></tr>`).join("");
+  return `<section class="phase" id="food"><div class="phase-head"><h2>饮食指南</h2><span>184cm · 34 岁 · 91kg</span></div>
+  <div class="guide"><h3>每天目标</h3>
+    <p><span class="big">1900–2000</span> kcal &nbsp;·&nbsp; 蛋白质 <span class="big">140–150</span> g</p>
+    <p>你每天大约消耗 2550–2650 kcal,吃到 1900–2000 就有 600–700 的缺口,约每周减 0.6–0.7 kg,到 12/31 能到 85–86 kg。早上那 40 分钟大约只消耗 300 kcal,所以<b>吃和走才是主力</b>。</p></div>
+  <div class="guide"><h3>手掌法 · 不用称克数</h3>
+    <ul>
+      <li><b>蛋白质每餐 2 个掌心</b>(手掌大小和厚度):鸡胸、鱼、虾、瘦肉、豆腐。3 个鸡蛋 ≈ 1.5 掌心。一天三餐都够,蛋白质就到 140g 左右了。</li>
+      <li><b>蔬菜每餐 2 拳</b>:越多越好,饿了先吃菜。</li>
+      <li><b>主食早、午各 1 拳,晚餐半拳</b>:米饭、面、面包。练完的早餐可以多半拳。</li>
+      <li><b>油脂每餐 1 个大拇指</b>:外食基本已经超了,所以少点炸的、少喝汤汁。</li>
+    </ul>
+    <p>早上 7 点空腹练没问题;如果头晕或很饿,练前喝一杯牛奶或吃半根香蕉。练完的早餐示例:3 个鸡蛋 + 无糖豆浆 + 1 片全麦面包(或 kaya 吐司 1 片少涂)。</p></div>
+  <div class="guide"><h3>小贩中心点餐对照(热量为估算)</h3>
+    <table><tr><th>餐</th><th>kcal</th><th>建议</th></tr>${tr(rows)}</table>
+    <table style="margin-top:10px"><tr><th>饮料</th><th>kcal</th><th>建议</th></tr>${tr(drinks)}</table>
+    <p style="margin-top:8px">通用技巧:点 <b>"less rice / 饭少"</b>、<b>"汁另外放"</b>、<b>"不要皮"</b>;汤面不喝汤;炸的东西一周最多 2 次。</p></div>
+  <div class="guide"><h3>拍照发给 Claude</h3>
+    <p>每周日把「本周小结」和 1–2 天比较典型的饮食照片一起发过来。照片从正上方拍,让手或筷子入镜做参照,我能认出大部分菜并估分量(误差 20–30%,看趋势足够)。</p></div>
+  </section>`;
+}
+function renderLib(){
+  const groups=[["热身 · 每天一样",WARM],["力量动作",["哑铃地板卧推","上斜俯卧撑","高脚杯深蹲","哑铃侧平举","死虫","单臂壶铃划船","后撤步弓步","单腿臀桥","靠墙天使","侧平板","平板支撑"]],
+    ["拉伸 · 练完 5 分钟",COOL],["备选",["靠墙静蹲"]]];
+  let h=`<section class="phase" id="lib"><div class="phase-head"><h2>动作库</h2><span>动图 + 要点 · 点训练里的小图跳到这里</span></div>`;
+  groups.forEach(g=>{
+    h+=`<h3 class="gh">${g[0]}</h3>`;
+    g[1].forEach(n=>{
+      const e=EX[n],pic=picHTML(n);
+      h+=`<div class="libcard${pic?"":" nofig"}" id="${exId(n)}">${pic?`<div class="pic">${pic}</div>`:""}<div>
+        <div class="ex-name"><b>${n}</b><span class="target">${e[0]}</span></div>
+        <p>${md(e[1])}</p>${vid(n)}</div></div>`;
+    });
+  });
+  h+=`<div class="note">这个月刻意不做:<b>壶铃摆荡</b>(爆发式髋铰链 + 滑脱,等去健身房有教练看着再说)、卷腹 / 仰卧起坐、所有跳跃动作、任何靠椅子或门框借力的动作。</div>`;
+  return h+`</section>`;
+}
+
+/* ================= 周小结 ================= */
+let wOffset=0;
+function weekStartOf(d){const dt=new Date(d+"T00:00:00");const k=(dt.getDay()+6)%7;return addDays(d,-k);}
+function makeWeekly(){
+  const base=weekStartOf(todayStr<START?START:todayStr);
+  const ws0=addDays(base,-7*wOffset),we=addDays(ws0,6);
+  const days=[];for(let i=0;i<7;i++)days.push(addDays(ws0,i));
+  const ws=weights();
+  const L=[];
+  const f=d=>{const x=new Date(d+"T00:00:00");return (x.getMonth()+1)+"/"+x.getDate();};
+  L.push(`【本周小结】${f(ws0)}–${f(we)}`);
+  const plan=days.map(planDay).filter(Boolean).filter(x=>x.type!=="rest");
+  if(plan.length){
+    L.push(`训练:${plan.filter(isDone).length}/${plan.length} 次完成`);
+    plan.forEach(p=>{const r=DATA[p.d]||{};let s=`  ${f(p.d)} ${p.label}:${r.main?"✓":"✗"}`;
+      if(LIFTS[p.type]&&r.sets){const parts=Object.keys(r.sets).map(n=>{const a=(r.sets[n]||[]).filter(x=>x&&(x.kg||x.reps));
+        return a.length?n+" "+a.map(x=>(x.kg?x.kg+(LIFTS[p.type].ex.some(e=>e.band&&e.n===n)?"":"kg")+"×":"")+(x.reps||"?")).join(","):"";}).filter(Boolean);
+        if(parts.length)s+=" | "+parts.join(";");}
+      if(p.type==="C"&&r.rounds)s+=` | ${r.rounds} 轮`;
+      if(p.type==="cardio"){if(r.vid!=null&&VIDEOS[r.vid])s+=` | ${VIDEOS[r.vid].t}`;if(r.min)s+=` ${r.min} 分`;}
+      L.push(s);});
+  }
+  const wk=ws.filter(p=>p.d>=ws0&&p.d<=we);
+  if(wk.length){const a=wk.reduce((s,p)=>s+p.w,0)/wk.length;
+    const prev=ws.filter(p=>p.d>=addDays(ws0,-7)&&p.d<ws0);
+    let s=`体重:本周平均 ${a.toFixed(1)} kg(${wk.length} 次),参考线 ${targetOn(we).toFixed(1)}`;
+    if(prev.length){const pa=prev.reduce((s,p)=>s+p.w,0)/prev.length;s+=`,比上周 ${(a-pa>=0?"+":"")+(a-pa).toFixed(1)}`;}
+    L.push(s);} else L.push("体重:本周没记录");
+  const waist=days.map(d=>DATA[d]&&DATA[d].waist).filter(Boolean);if(waist.length)L.push(`腰围:${waist.join(" → ")} cm`);
+  const st=days.map(d=>DATA[d]&&+DATA[d].steps).filter(x=>x>0);
+  if(st.length)L.push(`步数:平均 ${Math.round(st.reduce((a,b)=>a+b,0)/st.length)},达标 ${st.filter(x=>x>=STEP_GOAL).length}/${st.length} 天`);
+  const fs=days.map(d=>DATA[d]?foodScore(DATA[d]):0).filter(x=>x>0);
+  if(fs.length)L.push(`饮食打卡:平均 ${(fs.reduce((a,b)=>a+b,0)/fs.length).toFixed(1)}/${FOOD_MAX}(记了 ${fs.length} 天)`);
+  const flags={};days.forEach(d=>((DATA[d]&&DATA[d].flags)||[]).forEach(x=>{if(x!=="都正常")flags[x]=(flags[x]||0)+1;}));
+  L.push("身体反馈:"+(Object.keys(flags).length?Object.entries(flags).map(([k,v])=>k+"×"+v).join(","):"都正常"));
+  const notes=days.filter(d=>DATA[d]&&DATA[d].note).map(d=>`  ${f(d)} ${DATA[d].note}`);
+  if(notes.length){L.push("备注:");L.push(...notes);}
+  return L.join("\n");
+}
+function initWeekly(){
+  const ta=document.getElementById("wText");
+  const run=()=>{ta.value=makeWeekly();
+    try{navigator.clipboard.writeText(ta.value).then(()=>toast("已生成并复制"),()=>toast("已生成,请长按复制"));}catch(e){toast("已生成,请长按复制");}};
+  document.getElementById("wMake").onclick=()=>{wOffset=0;run();};
+  document.getElementById("wPrev").onclick=()=>{wOffset++;run();};
 }
 
 function initBackup(){
@@ -629,13 +889,14 @@ function initBackup(){
     if(!d||typeof d!=="object")return toast("这段文字读不出来",true);
     Object.keys(d).forEach(k=>{DATA[k]=Object.assign(DATA[k]||{},d[k]);});
     await sSet(KEY,JSON.stringify(DATA));
-    document.getElementById("timeline").innerHTML="";render();toast("已导入");
+    render();toast("已导入");
   };
 }
 (async()=>{
   try{const sv=await sGet(SKEY);SYNC=sv?JSON.parse(sv):null;}catch(e){SYNC=null;}
   await load();
   render();
+  initWeekly();
   initBackup();
   initSync();
   if(SYNC)pull(true);
@@ -643,7 +904,5 @@ function initBackup(){
     const days=last?Math.round((new Date(todayStr)-new Date(last))/864e5):999;
     if(MODE!=="app"&&days>=14)document.getElementById("bNag").textContent="· 该备份了";})();
   if(MODE==="mem")document.getElementById("banner").style.display="block";
-  const t=document.querySelector(".day.today");
-  if(t)setTimeout(()=>t.scrollIntoView({block:"center",behavior:"smooth"}),260);
 })();
 </script>
