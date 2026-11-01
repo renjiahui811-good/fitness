@@ -384,7 +384,7 @@ const PHASES=WEEKS.map((w,wi)=>({name:w.name,sub:w.sub,wk:w,days:WEEK_TPL.map((t
   let label = type==="A"?"力量 A · 胸 + 腿":type==="B"?"力量 B · 背 + 体态":type==="C"?"力量 C · 全身循环":
               type==="cardio"?`低冲击跳操 ${w.cardio} 分 + 核心`:"休息 · 走够 8000 步";
   const extra=[];
-  if(di===0)extra.push("称重 + 量腰围");
+  if(di===0)extra.push("称重 + 量三围");
   if(t[1]==="sun"){extra.push("发周小结");if(wi===1||wi===3)extra.push("拍体态照");}
   return {d,type,label,extra,wi,sun:t[1]==="sun"};
 })}));
@@ -681,7 +681,7 @@ function buildPanel(p,day,isTodayCard){
   h+=`<div class="block"><h3>身体数据</h3>
     <div class="field"><label>体重</label><input type="number" step="0.1" inputmode="decimal" data-k="weight" value="${esc(r.weight)}" placeholder="${day.d<START?W_START.toFixed(1):targetOn(day.d).toFixed(1)}"><span class="hint">kg · 早上空腹、上完厕所再称 · 参考线 ${day.d<START?W_START.toFixed(1):targetOn(day.d).toFixed(1)}</span></div>
     <div class="field"><label>步数</label><input type="number" inputmode="numeric" data-k="steps" value="${esc(r.steps)}" placeholder="${STEP_GOAL}"><span class="hint">晚上从手机健康 App 抄过来 · 目标 ${STEP_GOAL}</span></div>
-    ${isMon||r.waist?`<div class="field"><label>腰围</label><input type="number" step="0.5" inputmode="decimal" data-k="waist" value="${esc(r.waist)}" placeholder="cm"><span class="hint">cm · 每周一量:肚脐那一圈,放松站立、正常呼气后量</span></div>`:""}
+    ${isMon||r.waist||r.chest||r.hip?[["chest","胸围","乳头那一圈,手臂自然下垂"],["waist","腰围","肚脐那一圈,放松站立、正常呼气后量"],["hip","臀围","屁股最翘的那一圈"]].map(m=>`<div class="field"><label>${m[1]}</label><input type="number" step="0.5" inputmode="decimal" data-k="${m[0]}" value="${esc(r[m[0]])}" placeholder="cm"><span class="hint">cm · 每周一早上空腹量 · ${m[2]},软尺贴身保持水平</span></div>`).join(""):""}
   </div>`;
 
   // 饮食
@@ -857,7 +857,8 @@ function makeWeekly(){
     let s=`体重:本周平均 ${a.toFixed(1)} kg(${wk.length} 次),参考线 ${targetOn(we).toFixed(1)}`;
     if(prev.length){const pa=prev.reduce((s,p)=>s+p.w,0)/prev.length;s+=`,比上周 ${(a-pa>=0?"+":"")+(a-pa).toFixed(1)}`;}
     L.push(s);} else L.push("体重:本周没记录");
-  const waist=days.map(d=>DATA[d]&&DATA[d].waist).filter(Boolean);if(waist.length)L.push(`腰围:${waist.join(" → ")} cm`);
+  days.filter(d=>DATA[d]&&(DATA[d].chest||DATA[d].waist||DATA[d].hip)).forEach(d=>{const r=DATA[d];
+    L.push(`三围(${f(d)}):胸 ${r.chest||"–"} / 腰 ${r.waist||"–"} / 臀 ${r.hip||"–"} cm`);});
   const st=days.map(d=>DATA[d]&&+DATA[d].steps).filter(x=>x>0);
   if(st.length)L.push(`步数:平均 ${Math.round(st.reduce((a,b)=>a+b,0)/st.length)},达标 ${st.filter(x=>x>=STEP_GOAL).length}/${st.length} 天`);
   const fs=days.map(d=>DATA[d]?foodScore(DATA[d]):0).filter(x=>x>0);
