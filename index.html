@@ -753,7 +753,7 @@ function buildPanel(p,day,isTodayCard){
   </div>`;
 
   // 反馈
-  h+=`<div class="block"><h3>身体反馈</h3><div class="chips">`;
+  h+=`<div class="block"><h3>身体反馈</h3>${r.skip&&r.skipFlag?`<p style="font-size:11.5px;color:var(--mute);margin:-4px 0 8px">已按跳过原因记上「${r.skipFlag}」,还有别的不舒服再补点。</p>`:""}<div class="chips">`;
   ["都正常","腰酸","颈紧","膝痛","睡不够","很饿"].forEach(f=>{
     h+=`<button type="button" class="chip${f==="都正常"?"":" warn"}" data-k="flag" data-f="${f}" aria-pressed="${(r.flags||[]).includes(f)}">${f}</button>`;});
   h+=`</div><div class="field" style="margin-top:9px"><label>备注</label><input type="text" data-k="note" value="${esc(r.note)}" placeholder="哪里不舒服 / 今天状态"></div>
@@ -767,8 +767,13 @@ function buildPanel(p,day,isTodayCard){
   p.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
     const rr=rec(day.d),a=b.dataset.act;
     if(a==="skipask"){const box=p.querySelector("[data-skipbox]");box.style.display=box.style.display==="none"?"flex":"none";return;}
-    if(a==="skip")rr.skip=b.dataset.v;
-    if(a==="unskip")delete rr.skip;
+    if(a==="skip"){rr.skip=b.dataset.v;
+      // 跳过原因直接记进身体反馈,不用再点一次
+      const f={"腰酸":"腰酸","颈紧":"颈紧","膝痛":"膝痛","没睡好":"睡不够"}[rr.skip];
+      rr.flags=(rr.flags||[]).filter(x=>x!=="都正常");
+      if(f&&!rr.flags.includes(f)){rr.flags.push(f);rr.skipFlag=f;}}
+    if(a==="unskip"){delete rr.skip;
+      if(rr.skipFlag){rr.flags=(rr.flags||[]).filter(x=>x!==rr.skipFlag);delete rr.skipFlag;}}
     if(a==="as")rr.as=b.dataset.v;
     if(a==="unas")delete rr.as;
     rr._t=Date.now();save();
