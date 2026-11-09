@@ -201,11 +201,6 @@
   .chip.warn[aria-pressed="true"]{background:#F6E4E1;border-color:var(--alert);color:var(--alert)}
   .chip:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
 
-  .meal{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
-  .meal b{font-size:13px;font-weight:500;width:34px;flex:none;color:var(--ink)}
-  .meal .chips{flex:1;gap:6px}
-  .meal .chip{padding:4px 10px;font-size:12.5px}
-  .score{font-family:Georgia,serif;color:var(--jade);font-weight:600}
 
   .note{background:var(--amber-soft);border-left:3px solid var(--amber);padding:9px 11px;
     font-size:12.5px;color:#5C4A18;border-radius:0 6px 6px 0;margin-top:10px;line-height:1.55}
@@ -278,7 +273,7 @@
   <div id="extra"></div>
   <details id="weekly">
     <summary>本周小结 · 发给 Claude</summary>
-    <p>每周日生成一次,复制后连同 1–2 天的饮食照片一起发给 Claude。照片从正上方拍,让手或筷子入镜做参照。</p>
+    <p>每周日生成一次,复制后发给 Claude。</p>
     <div class="btns"><button type="button" class="btn" id="wMake">生成本周小结</button><button type="button" class="btn" id="wPrev">上一周</button></div>
     <textarea id="wText" readonly placeholder="点「生成本周小结」"></textarea>
   </details>
@@ -525,7 +520,7 @@ function save(quiet){
     if(b)b.style.display=(MODE==="mem")?"block":"none";
   },350);
 }
-function rec(d){if(!DATA[d])DATA[d]={warm:[],cool:[],core:[],circ:[],main:false,sets:{},food:{},flags:[]};return DATA[d];}
+function rec(d){if(!DATA[d])DATA[d]={warm:[],cool:[],core:[],circ:[],main:false,sets:{},flags:[]};return DATA[d];}
 
 /* ================= 计算 ================= */
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
@@ -561,12 +556,6 @@ function lastLoad(exName,beforeDate){
     if(s&&s.some(x=>x&&x.reps))return s.filter(x=>x&&x.reps).map(x=>x.reps).join("/")+(LIFTS.B.ex.some(e=>e.n===exName&&e.sec)?"秒":"次");}
   return null;
 }
-const MEALS=[["b","早餐",["蛋白质够","有蔬菜","主食≤1拳"]],["l","午餐",["蛋白质够","蔬菜2拳","主食≤1拳"]],["d","晚餐",["蛋白质够","蔬菜2拳","主食≤半拳"]]];
-const HABITS=["晚饭 8 点前吃完","没吃夜宵/甜饮"];
-const FOOD_MAX=MEALS.reduce((s,m)=>s+m[2].length,0)+HABITS.length;
-function foodScore(r){if(!r||!r.food)return 0;let n=0;
-  MEALS.forEach(m=>(r.food[m[0]]||[]).forEach(v=>{if(v)n++;}));
-  (r.food.h||[]).forEach(v=>{if(v)n++;});return n;}
 
 /* ================= 图示 ================= */
 function picHTML(n){const e=EX[n];if(!e||!e[2])return "";
@@ -687,7 +676,7 @@ function buildPanel(p,day,isTodayCard){
     h+=`<div class="block"><h3>③ 球后拉伸 · 回家洗澡后做 · 8 分钟</h3>`;
     TENNIS_COOL.forEach((x,i)=>h+=checkRow("tc",i,x[0],EX[x[0]][0]+" · "+x[1],r));
     h+=`</div>`;
-    if(day.sun)h+=`<div class="note">周日复盘:在页面底部「本周小结」生成文字,连同 1–2 天的饮食照片发给 Claude。${day.extra.includes("拍体态照")?"<br><b>今天拍体态照</b>:正面 + 侧面,同一位置、同一时间(早上空腹),和 9/8 那两张对比。":""}</div>`;
+    if(day.sun)h+=`<div class="note">周日复盘:在页面底部「本周小结」生成文字,发给 Claude。${day.extra.includes("拍体态照")?"<br><b>今天拍体态照</b>:正面 + 侧面,同一位置、同一时间(早上空腹),和 9/8 那两张对比。":""}</div>`;
   }
 
   if(train&&!r.skip){
@@ -750,7 +739,7 @@ function buildPanel(p,day,isTodayCard){
     h+=`<div class="block"><h3>休息日</h3><p style="font-size:13px;color:#3E4C49;margin:0">不练,但要动:散步、走楼梯、去超市都算,走够 ${STEP_GOAL} 步。热量缺口主要靠吃和走,不是靠那 40 分钟。</p>`;
     if(day.wi!=null&&PHASES[day.wi].days.some(isSkip))h+=`<div class="chips" style="margin-top:10px">${["A","B","C","cardio"].map(t=>`<button type="button" class="chip" data-act="as" data-v="${t}">补练 ${t==="cardio"?"跳操":t}</button>`).join("")}</div>
       <p style="font-size:11.5px;color:var(--mute);margin:6px 0 0">这周有跳过的训练,身体恢复了的话可以今天补上,点要补的那一节。</p>`;
-    if(day.sun)h+=`<div class="note">周日复盘:在页面底部「本周小结」生成文字,连同 1–2 天的饮食照片发给 Claude。${day.extra.includes("拍体态照")?"<br><b>今天拍体态照</b>:正面 + 侧面,同一位置、同一时间(早上空腹),和 9/8 那两张对比。":""}</div>`;
+    if(day.sun)h+=`<div class="note">周日复盘:在页面底部「本周小结」生成文字,发给 Claude。${day.extra.includes("拍体态照")?"<br><b>今天拍体态照</b>:正面 + 侧面,同一位置、同一时间(早上空腹),和 9/8 那两张对比。":""}</div>`;
     h+=`</div>`;
   }
 
@@ -763,21 +752,11 @@ function buildPanel(p,day,isTodayCard){
     ${isMon||r.waist||r.chest||r.hip?[["chest","胸围","乳头那一圈,手臂自然下垂"],["waist","腰围","肚脐那一圈,放松站立、正常呼气后量"],["hip","臀围","屁股最翘的那一圈"]].map(m=>`<div class="field"><label>${m[1]}</label><input type="number" step="0.5" inputmode="decimal" data-k="${m[0]}" value="${esc(r[m[0]])}" placeholder="cm"><span class="hint">cm · 每周一早上空腹量 · ${m[2]},软尺贴身保持水平</span></div>`).join(""):""}
   </div>`;
 
-  // 饮食
-  h+=`<div class="block"><h3>饮食 · 手掌法 · <span class="score" data-score>${foodScore(r)}</span>/${FOOD_MAX}</h3>`;
-  MEALS.forEach(m=>{
-    const v=(r.food&&r.food[m[0]])||[];
-    h+=`<div class="meal"><b>${m[1]}</b><div class="chips">${m[2].map((t,i)=>`<button type="button" class="chip" data-k="food" data-m="${m[0]}" data-i="${i}" aria-pressed="${!!v[i]}">${t}</button>`).join("")}</div></div>`;
-  });
-  const hv=(r.food&&r.food.h)||[];
-  h+=`<div class="meal"><b>习惯</b><div class="chips">${HABITS.map((t,i)=>`<button type="button" class="chip" data-k="food" data-m="h" data-i="${i}" aria-pressed="${!!hv[i]}">${t}</button>`).join("")}</div></div>
-    <p style="font-size:11.5px;color:var(--mute);margin:4px 0 0">一掌心 = 手掌大小、厚度的肉/鱼/豆腐;一拳 = 拳头大小的饭/面。详见下方「饮食指南」。</p></div>`;
-
   // 反馈
   h+=`<div class="block"><h3>身体反馈</h3><div class="chips">`;
   ["都正常","腰酸","颈紧","膝痛","睡不够","很饿"].forEach(f=>{
     h+=`<button type="button" class="chip${f==="都正常"?"":" warn"}" data-k="flag" data-f="${f}" aria-pressed="${(r.flags||[]).includes(f)}">${f}</button>`;});
-  h+=`</div><div class="field" style="margin-top:9px"><label>备注</label><input type="text" data-k="note" value="${esc(r.note)}" placeholder="吃了什么 / 哪里不舒服 / 今天状态"></div>
+  h+=`</div><div class="field" style="margin-top:9px"><label>备注</label><input type="text" data-k="note" value="${esc(r.note)}" placeholder="哪里不舒服 / 今天状态"></div>
     <div class="alarm">出现腿麻、脚无力、下肢放射痛、手指麻木 → 停止训练,尽快看医生。</div></div>`;
 
   p.innerHTML=h;
@@ -795,12 +774,10 @@ function buildPanel(p,day,isTodayCard){
     rr._t=Date.now();save();
     buildPanel(p,day,isTodayCard);refresh();
   }));
-  p.querySelectorAll(".chip:not([data-act])").forEach(c=>c.addEventListener("click",()=>{
+  p.querySelectorAll(".chip[data-k=flag]").forEach(c=>c.addEventListener("click",()=>{
     const rr=rec(day.d);const on=c.getAttribute("aria-pressed")==="true";
-    if(c.dataset.k==="flag"){rr.flags=rr.flags||[];const f=c.dataset.f;
-      if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);}
-    else{rr.food=rr.food||{};const m=c.dataset.m;rr.food[m]=rr.food[m]||[];rr.food[m][+c.dataset.i]=!on;
-      const sc=p.querySelector("[data-score]");if(sc)sc.textContent=foodScore(rr);}
+    rr.flags=rr.flags||[];const f=c.dataset.f;
+    if(on)rr.flags=rr.flags.filter(x=>x!==f);else rr.flags.push(f);
     rr._t=Date.now();c.setAttribute("aria-pressed",String(!on));save();
   }));
   p.querySelectorAll(".vidrow button").forEach(b=>b.addEventListener("click",()=>{
@@ -872,7 +849,7 @@ function drawChart(){
 /* ================= 附加板块 ================= */
 function renderGym(){
   return `<section class="phase"><div class="phase-head"><h2>第5周起 · 健身房</h2><span>11/30 开始 · 计划待定</span></div>
-    <div class="guide"><p style="margin:0">在家 4 周把习惯养起来后再排健身房计划。想提前去的话,至少提前几天告诉 Claude,重新排。每天的体重、步数、饮食仍然在上面「今天」里记,体重曲线一直画到 12/31。</p></div></section>`;
+    <div class="guide"><p style="margin:0">在家 4 周把习惯养起来后再排健身房计划。想提前去的话,至少提前几天告诉 Claude,重新排。每天的体重、步数仍然在上面「今天」里记,体重曲线一直画到 12/31。</p></div></section>`;
 }
 function renderFood(){
   const rows=[
@@ -905,8 +882,10 @@ function renderFood(){
     <table><tr><th>餐</th><th>kcal</th><th>建议</th></tr>${tr(rows)}</table>
     <table style="margin-top:10px"><tr><th>饮料</th><th>kcal</th><th>建议</th></tr>${tr(drinks)}</table>
     <p style="margin-top:8px">通用技巧:点 <b>"less rice / 饭少"</b>、<b>"汁另外放"</b>、<b>"不要皮"</b>;汤面不喝汤;炸的东西一周最多 2 次。</p></div>
-  <div class="guide"><h3>拍照发给 Claude</h3>
-    <p>每周日把「本周小结」和 1–2 天比较典型的饮食照片一起发过来。照片从正上方拍,让手或筷子入镜做参照,我能认出大部分菜并估分量(误差 20–30%,看趋势足够)。</p></div>
+  <div class="guide"><h3>不记饮食,怎么知道吃得对不对</h3>
+    <p>只看体重曲线:<b>7 天平均连续两周高于参考线</b>,说明吃多了,从下面挑一条执行两周,不够再加一条:</p>
+    <ul><li>晚饭不吃主食(饭、面、面包)</li><li>加糖的 kopi / teh 换成 kosong</li><li>小贩中心只点上表的"首选"</li></ul>
+    <p>反过来,第 2 周以后每周掉超过 1kg 而且一直很饿,加回半拳主食。第 1 周掉得快多半是水分,不用管。</p></div>
   </section>`;
 }
 function renderLib(){
@@ -968,8 +947,6 @@ function makeWeekly(){
   if(st.length)L.push(`步数:平均 ${Math.round(st.reduce((a,b)=>a+b,0)/st.length)},达标 ${st.filter(x=>x>=STEP_GOAL).length}/${st.length} 天`);
   const sp=days.filter(d=>DATA[d]&&DATA[d].sport).map(d=>`${f(d)} ${DATA[d].sport}`);
   if(sp.length)L.push("其他运动:"+sp.join(";"));
-  const fs=days.map(d=>DATA[d]?foodScore(DATA[d]):0).filter(x=>x>0);
-  if(fs.length)L.push(`饮食打卡:平均 ${(fs.reduce((a,b)=>a+b,0)/fs.length).toFixed(1)}/${FOOD_MAX}(记了 ${fs.length} 天)`);
   const flags={};days.forEach(d=>((DATA[d]&&DATA[d].flags)||[]).forEach(x=>{if(x!=="都正常")flags[x]=(flags[x]||0)+1;}));
   L.push("身体反馈:"+(Object.keys(flags).length?Object.entries(flags).map(([k,v])=>k+"×"+v).join(","):"都正常"));
   const notes=days.filter(d=>DATA[d]&&DATA[d].note).map(d=>`  ${f(d)} ${DATA[d].note}`);
