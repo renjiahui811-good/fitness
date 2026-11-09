@@ -348,6 +348,16 @@ const EX={
   "抱臂上背拉伸":["30 秒 × 2","双手在身前交扣往前推,上背拱起,肩胛骨向两边打开,低头看地。只拱上背,腰保持不动。","upperback","upper+back+stretch+standing","拉伸"],
   "颈侧拉伸":["每侧 20 秒","头侧倒,同侧手轻放头顶,只用手的重量,不要用力压;另一侧肩膀往下沉。","neck","neck+side+stretch+gentle","拉伸"],
   "扶墙小腿拉伸":["每侧 30 秒","双手扶墙,一腿在后伸直、脚跟踩实地面,身体前倾,拉小腿后侧。","calf","calf+stretch+wall","拉伸"],
+  "快走到慢跑":["3 分钟","绕场快走到微微出汗,再慢跑 1 分钟。右膝没感觉再加速。","","","网球"],
+  "站姿髋关节绕环":["每侧 8 圈","扶着网柱或围网,单腿抬膝向外画圈,再反方向。打开髋关节,转身和跨步更顺。","hipcircle","standing+hip+circles","网球"],
+  "弹力带侧向走":["每侧 10 步","弹力带套在膝盖上方,半蹲,向侧面迈小步,膝盖始终朝外顶住带子。练的是臀中肌,急停变向时膝盖不内扣——**保护右膝最有用的一步**。","bandwalk","banded+lateral+walk","网球"],
+  "侧滑步":["来回 4 趟","半蹲,小步侧向移动,两脚不交叉、不跳。模拟场上的横向移动。","","tennis+side+shuffle+warm+up","网球"],
+  "手臂绕环":["前后各 10 圈","手臂侧平举画圈,由小到大。","armcircle","arm+circles+warm+up","网球"],
+  "胸椎转体":["每侧 8 次","双臂前平举,**髋和膝盖朝前不动**,只转胸口和肩,小幅慢速。转体要从上背来,不是从腰——腰椎滑脱最忌腰部大幅扭转。","torso","thoracic+rotation+standing","网球"],
+  "手腕热身":["各 20 秒","握拳绕手腕,正反两个方向;再手臂前伸、另一只手把手背轻轻往下压。预防网球肘。","","wrist+warm+up+tennis","网球"],
+  "慢速对拉":["5 分钟","先在发球线附近小力量对拉,再慢慢退到底线。前 5 分钟不发球、不扣杀。","","","网球"],
+  "跪姿前臂拉伸":["30 秒 × 2","四点跪,手指朝向膝盖、掌心贴地,身体慢慢往后坐,拉前臂内侧;再翻成手背贴地拉外侧。握了一晚上拍,前臂最紧。","forearm","kneeling+forearm+stretch","网球"],
+  "仰卧抱膝":["30 秒 × 2","仰卧,双手抱住双膝往胸口带,下背放松贴地,可以轻轻左右滚。发球时腰会后仰,打完用它让腰椎回到微微弯曲的舒服位置,对滑脱很友好。","hugknees","knees+to+chest+stretch","网球"],
   "靠墙静蹲":["40 秒","膝盖不舒服那天替代深蹲和弓步,零冲击。大腿角度不低于 90°。","FIG","wall+sit+exercise","备选"]
 };
 
@@ -360,6 +370,10 @@ const COOLS={
   cardio:[["扶墙小腿拉伸","小腿 ← 跳操"],["侧卧股四头肌拉伸","大腿前侧 ← 跳操"],["跪姿髋屈肌拉伸","髋前侧 ← 抬腿动作"],["仰卧腘绳肌拉伸","大腿后侧"],["仰卧4字臀拉伸","臀"]]
 };
 const ALL_COOL=[...new Set(Object.values(COOLS).flat().map(x=>x[0]))];
+/* 周日网球:球前热身(在球场做) + 球后拉伸(回家做) */
+const TENNIS_WARM=["快走到慢跑","站姿髋关节绕环","弹力带侧向走","后撤步弓步","侧滑步","手臂绕环","弹力带拉开","胸椎转体","手腕热身","慢速对拉"];
+const TENNIS_WARM_T={"后撤步弓步":"每侧 5 次 · 徒手、慢","弹力带拉开":"15 次"};
+const TENNIS_COOL=[["扶墙小腿拉伸","小腿 ← 跑动、急停"],["侧卧股四头肌拉伸","大腿前侧 ← 半蹲移动"],["跪姿髋屈肌拉伸","髋前侧 ← 发球后仰"],["仰卧4字臀拉伸","臀 ← 转体击球"],["交叉手臂肩后拉伸","持拍侧肩膀 ← 挥拍"],["跪姿前臂拉伸","前臂 ← 握拍"],["仰卧抱膝","腰背 ← 发球后仰"],["婴儿式","整体放松"]];
 /* 身体不适跳过时的轻松版 */
 const LIGHT=[["猫牛式","8 次"],["鸟狗","每侧 5 次"],["臀桥","10 次"],["婴儿式","40 秒"]];
 const CORE=[["死虫","2 组 × 每侧 8 次"],["侧平板","2 组 × 每侧 20 秒"]];
@@ -392,15 +406,15 @@ const WEEKS=[
   {name:"第3周",sub:"3 组 · 下放放慢到 3 秒 · 跪姿俯卧撑做够 15 个试标准版 · 臀桥换单腿 · 跳操 25 分",s:3,cardio:25,rounds:4,work:"45 秒做 / 15 秒歇",alt:true},
   {name:"第4周",sub:"3 组 · 弓步拿哑铃 · 跳操 25–30 分 · 循环 4 轮",s:3,cardio:28,rounds:4,work:"45 秒做 / 15 秒歇",alt:true}
 ];
-/* 周一 A · 周二 跳操 · 周三 休 · 周四 B · 周五 跳操 · 周六 C · 周日 休 */
-const WEEK_TPL=[["A"],["cardio"],["rest"],["B"],["cardio"],["C"],["rest","sun"]];
+/* 周一 A · 周二 跳操 · 周三 休 · 周四 B · 周五 跳操 · 周六 C · 周日 网球 */
+const WEEK_TPL=[["A"],["cardio"],["rest"],["B"],["cardio"],["C"],["tennis","sun"]];
 
 function addDays(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function dayDiff(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5);}
 
 function typeLabel(type,w){return type==="A"?"力量 A · 胸 + 腿":type==="B"?"力量 B · 背 + 体态":type==="C"?"力量 C · 全身循环":
-  type==="cardio"?`低冲击跳操 ${w.cardio} 分 + 核心`:"休息 · 走够 8000 步";}
+  type==="cardio"?`低冲击跳操 ${w.cardio} 分 + 核心`:type==="tennis"?"网球 · 球前热身 + 球后拉伸":"休息 · 走够 8000 步";}
 const PHASES=WEEKS.map((w,wi)=>({name:w.name,sub:w.sub,wk:w,days:WEEK_TPL.map((t,di)=>{
   const d=addDays(START,wi*7+di), type=t[0];
   const label=typeLabel(type,w);
@@ -527,7 +541,7 @@ function isDone(day){
 }
 /* 训练计数:跳过的不算,补练的算 */
 function trainStat(days){
-  const t=days.filter(d=>effType(d)!=="rest"&&effType(d)!=="log");
+  const t=days.filter(d=>!["rest","log","tennis"].includes(effType(d)));
   return {done:t.filter(isDone).length,total:t.filter(d=>!isSkip(d)).length};
 }
 function dayLabel(day){const r=DATA[day.d]||{};
@@ -644,7 +658,7 @@ function checkRow(key,i,n,t,r){
 
 function buildPanel(p,day,isTodayCard){
   const r=rec(day.d), wk=day.wi!=null?WEEKS[day.wi]:null;
-  const type=effType(day), train=type!=="rest"&&type!=="log";
+  const type=effType(day), train=!["rest","log","tennis"].includes(type);
   let h="";
   if(r.skip){
     h+=`<div class="block"><h3>今天跳过 · ${esc(r.skip)}</h3>
@@ -654,13 +668,27 @@ function buildPanel(p,day,isTodayCard){
     else h+=`<div class="note">能动的话做下面的轻松版,不想动就好好休息。</div>`;
     h+=`<h3 style="margin-top:12px">轻松版 · 可选 · 10 分钟</h3>`;
     LIGHT.forEach((x,i)=>h+=checkRow("light",i,x[0],x[1],r));
-    if(day.type!=="rest")h+=`<p style="font-size:12px;color:var(--mute);margin:8px 0 0">想补练的话放到下一个休息日(周三或周日),在那天点「补练」。一周最多补 1 次。</p>`;
+    if(day.type!=="rest")h+=`<p style="font-size:12px;color:var(--mute);margin:8px 0 0">周一、周二跳过的,可以在周三(休息日)点「补练」补上;周四以后跳过的就不补了,直接接下一周。</p>`;
     h+=`<div class="btns"><button type="button" class="btn" data-act="unskip">撤销跳过</button></div></div>`;
   }
-  else if(isTodayCard&&train)h+=`<div class="prog"><i id="progBar"></i></div><div class="progtxt" id="progTxt"></div>`;
+  else if(isTodayCard&&(train||type==="tennis"))h+=`<div class="prog"><i id="progBar"></i></div><div class="progtxt" id="progTxt"></div>`;
   if(!r.skip&&day.type==="rest"&&r.as)h+=`<div class="note" style="margin-top:12px">今天是补练:${typeLabel(r.as,wk)}。<button type="button" class="btn" data-act="unas" style="margin-left:6px;padding:2px 10px;font-size:12px">取消补练</button></div>`;
   if(!r.skip&&train)h+=`<div class="chips" style="margin-top:10px"><button type="button" class="chip warn" data-act="skipask">身体不适,今天跳过</button></div>
     <div class="chips" data-skipbox style="display:none;margin-top:8px">${["腰酸","膝痛","颈紧","生病","没睡好","其他"].map(x=>`<button type="button" class="chip" data-act="skip" data-v="${x}">${x}</button>`).join("")}</div>`;
+
+  const prevDay=planDay(addDays(day.d,-1));
+  if(train&&!r.skip&&prevDay&&prevDay.type==="tennis")h+=`<div class="note" style="margin-top:12px"><b>昨晚打了网球的话,先测一下腰。</b>做热身里的猫牛式和鸟狗:<br>· 完全没感觉 → 照常练<br>· 轻微酸,动一动就好 → 照常练,但深蹲蹲浅一点,每个动作少做 1 组<br>· 酸到影响弯腰起身,或越动越重 → 点上面的「跳过」,做轻松版</div>`;
+  if(type==="tennis"&&!r.skip){
+    h+=`<div class="block"><h3>① 球前热身 · 在球场做 · 10 分钟</h3>`;
+    TENNIS_WARM.forEach((n,i)=>h+=checkRow("tw",i,n,TENNIS_WARM_T[n]||null,r));
+    h+=`<div class="note"><b>发球别大幅后仰</b>:后弓腰是滑脱最怕的动作。抛球放在身前一点,靠转体和肩发力;腰一有感觉就改成下手发球。<br>打到腰开始酸就收拍,别硬撑到结束。双打比单打急停少,对右膝更友好。</div></div>`;
+    h+=`<div class="block"><h3>② 打球</h3><div class="field"><label>时长</label><input type="number" inputmode="numeric" data-k="min" value="${esc(r.min)}" placeholder="90"><span class="hint">分钟 · 打完腰和右膝的感觉记在下面「身体反馈」</span></div>
+      <label class="chk"><input type="checkbox" data-k="main"${r.main?" checked":""}><span>今天打了球</span></label></div>`;
+    h+=`<div class="block"><h3>③ 球后拉伸 · 回家洗澡后做 · 8 分钟</h3>`;
+    TENNIS_COOL.forEach((x,i)=>h+=checkRow("tc",i,x[0],EX[x[0]][0]+" · "+x[1],r));
+    h+=`</div>`;
+    if(day.sun)h+=`<div class="note">周日复盘:在页面底部「本周小结」生成文字,连同 1–2 天的饮食照片发给 Claude。${day.extra.includes("拍体态照")?"<br><b>今天拍体态照</b>:正面 + 侧面,同一位置、同一时间(早上空腹),和 9/8 那两张对比。":""}</div>`;
+  }
 
   if(train&&!r.skip){
     h+=`<div class="block"><h3>① 热身 + 康复 · 7 分钟</h3>`;
@@ -786,19 +814,23 @@ function buildPanel(p,day,isTodayCard){
 
 function updateProg(day){
   const bar=document.getElementById("progBar");if(!bar)return;
-  const r=rec(day.d),type=effType(day);if(!COOLS[type])return;
-  const parts=[[WARM.length,(r.warm||[]).filter(Boolean).length]];
+  const r=rec(day.d),type=effType(day);
+  const cnt=k=>(r[k]||[]).filter(Boolean).length;
+  let parts;
+  if(type==="tennis")parts=[[TENNIS_WARM.length,cnt("tw")],[1,r.main?1:0],[TENNIS_COOL.length,cnt("tc")]];
+  else if(!COOLS[type])return;
+  else{parts=[[WARM.length,(r.warm||[]).filter(Boolean).length]];
   if(type==="C")parts.push([CIRCUIT.length,(r.circ||[]).filter(Boolean).length]);
   if(type==="cardio")parts.push([CORE.length,(r.core||[]).filter(Boolean).length]);
-  parts.push([1,r.main?1:0],[COOLS[type].length,(r.cool||[]).filter(Boolean).length]);
+  parts.push([1,r.main?1:0],[COOLS[type].length,(r.cool||[]).filter(Boolean).length]);}
   const tot=parts.reduce((s,x)=>s+x[0],0),got=parts.reduce((s,x)=>s+x[1],0);
   bar.style.width=Math.round(got/tot*100)+"%";
-  document.getElementById("progTxt").textContent=r.main?`主训练已完成 · ${got}/${tot} 项`:`${got}/${tot} 项 · 从热身开始,点一项勾一项`;
+  document.getElementById("progTxt").textContent=r.main?`${type==="tennis"?"球已打完":"主训练已完成"} · ${got}/${tot} 项`:`${got}/${tot} 项 · 从热身开始,点一项勾一项`;
 }
 
 function onChange(day,el,p){
   const r=rec(day.d),k=el.dataset.k;r._t=Date.now();
-  if(["warm","cool","core","circ","light"].includes(k)){r[k]=r[k]||[];r[k][+el.dataset.i]=el.checked;}
+  if(["warm","cool","core","circ","light","tw","tc"].includes(k)){r[k]=r[k]||[];r[k][+el.dataset.i]=el.checked;}
   else if(k==="main"){r.main=el.checked;}
   else if(k==="set"){r.sets=r.sets||{};const ex=el.dataset.ex;r.sets[ex]=r.sets[ex]||[];
     const i=+el.dataset.i;r.sets[ex][i]=r.sets[ex][i]||{};r.sets[ex][i][el.dataset.f]=el.value;}
@@ -879,11 +911,14 @@ function renderFood(){
 }
 function renderLib(){
   const groups=[["热身 · 每天一样",WARM],["力量动作",["哑铃地板卧推","跪姿俯卧撑","高脚杯深蹲","哑铃侧平举","死虫","单臂壶铃划船","后撤步弓步","单腿臀桥","靠墙天使","侧平板","平板支撑"]],
-    ["拉伸 · 按当天练的部位选 5 个",ALL_COOL],["备选",["靠墙静蹲"]]];
+    ["拉伸 · 按当天练的部位选 5 个",ALL_COOL],["网球 · 球前热身",TENNIS_WARM],["网球 · 球后拉伸",TENNIS_COOL.map(x=>x[0])],["备选",["靠墙静蹲"]]];
+  const shown=new Set();
   let h=`<section class="phase" id="lib"><div class="phase-head"><h2>动作库</h2><span>动图 + 要点 · 点训练里的小图跳到这里</span></div>`;
   groups.forEach(g=>{
+    const fresh=g[1].filter(n=>!shown.has(n)),dup=g[1].filter(n=>shown.has(n));
     h+=`<h3 class="gh">${g[0]}</h3>`;
-    g[1].forEach(n=>{
+    if(dup.length)h+=`<p style="font-size:12px;color:var(--mute);margin:-4px 0 8px 2px">另外还有上面出现过的:${dup.map(n=>`<a href="#${exId(n)}" onclick="return goEx('${exId(n)}')" style="color:var(--jade)">${n}</a>`).join("、")}</p>`;
+    fresh.forEach(n=>{shown.add(n);
       const e=EX[n],pic=picHTML(n);
       h+=`<div class="libcard${pic?"":" nofig"}" id="${exId(n)}">${pic?`<div class="pic">${pic}</div>`:""}<div>
         <div class="ex-name"><b>${n}</b><span class="target">${e[0]}</span></div>
@@ -906,15 +941,18 @@ function makeWeekly(){
   const f=d=>{const x=new Date(d+"T00:00:00");return (x.getMonth()+1)+"/"+x.getDate();};
   L.push(`【本周小结】${f(ws0)}–${f(we)}`);
   const plan=days.map(planDay).filter(Boolean).filter(x=>effType(x)!=="rest"||isSkip(x));
+  const home=plan.filter(x=>effType(x)!=="tennis");
   if(plan.length){
     const st=trainStat(plan);
-    L.push(`训练:${st.done}/${st.total} 次完成`+(plan.some(isSkip)?`(跳过 ${plan.filter(isSkip).length} 次)`:""));
+    L.push(`训练:${st.done}/${st.total} 次完成`+(home.some(isSkip)?`(跳过 ${home.filter(isSkip).length} 次)`:""));
     plan.forEach(p=>{const r=DATA[p.d]||{},type=effType(p);
       let s=`  ${f(p.d)} ${dayLabel(p).replace(/<[^>]+>/g,"")}:${r.skip?"跳过"+((r.light||[]).some(Boolean)?",做了轻松版":""):r.main?"✓":"✗"}`;
       if(LIFTS[type]&&r.sets){const parts=Object.keys(r.sets).map(n=>{const a=(r.sets[n]||[]).filter(x=>x&&(x.kg||x.reps));
         return a.length?n+" "+a.map(x=>(x.kg?x.kg+(LIFTS[type].ex.some(e=>e.band&&e.n===n)?"":"kg")+"×":"")+(x.reps||"?")).join(","):"";}).filter(Boolean);
         if(parts.length)s+=" | "+parts.join(";");}
       if(type==="C"&&r.rounds)s+=` | ${r.rounds} 轮`;
+      if(type==="tennis"){const a=(r.tw||[]).filter(Boolean).length,b=(r.tc||[]).filter(Boolean).length;
+        if(r.min)s+=` ${r.min} 分`;s+=` | 球前热身 ${a}/${TENNIS_WARM.length},球后拉伸 ${b}/${TENNIS_COOL.length}`;}
       if(type==="cardio"){if(r.vid!=null&&vidTitle(r.vid))s+=` | ${vidTitle(r.vid)}`;if(r.min)s+=` ${r.min} 分`;}
       L.push(s);});
   }
