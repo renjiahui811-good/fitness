@@ -609,19 +609,19 @@ function dayLabel(day){const r=DATA[day.d]||{};
   if(r.skip)return `<s>${baseLabel(day)}</s> · 跳过(${esc(r.skip)})`;
   if(day.type==="rest"&&r.as)return "补练 · "+typeLabel(r.as,WEEKS[day.wi]);
   return baseLabel(day);}
-/* 今天该练什么:周日网球;健身房不够 3 次就推荐下一节(A、B 轮流),昨天刚去过就先歇一天 */
+/* 今天该练什么:周日网球;健身房不够 3 次就推荐下一节(A、B 轮流),昨天刚去过就先歇一天。只算勾了「完成」的,选了没练不算 */
 function recommend(day){
   const d=day.d,dt=new Date(d+"T00:00:00"),idx=(dt.getDay()+6)%7;
   if(idx===6)return {t:"tennis",why:"周日网球,按下面的球前热身和球后拉伸来。"};
   const ws=weekStartOf(d);let g=0;
   for(let i=0;i<7;i++){const x=addDays(ws,i);if(x===d)continue;const pd=planDay(x);
-    if(pd&&isGym(effType(pd))&&!isSkip(pd))g++;}
+    if(pd&&isGym(effType(pd))&&isDone(pd))g++;}
   if(g>=GYM_GOAL)return {t:"cardio",why:`这周健身房已经去够 ${GYM_GOAL} 次。今天在家跳操,或者休息走路都行。`};
   let last=null;for(let x=addDays(d,-1);x>=GYM;x=addDays(x,-1)){const pd=planDay(x);
-    if(pd&&isGym(effType(pd))&&!isSkip(pd)){last=effType(pd);break;}}
+    if(pd&&isGym(effType(pd))&&isDone(pd)){last=effType(pd);break;}}
   const next=last==="GA"?"GB":"GA";
   const y=planDay(addDays(d,-1)),need=GYM_GOAL-g,left=6-idx;
-  if(y&&isGym(effType(y))&&!isSkip(y)&&left>need*2-1)
+  if(y&&isGym(effType(y))&&isDone(y)&&left>need*2-1)
     return {t:"cardio",why:"昨天刚练过器械,今天让肌肉歇一天:在家跳操或者休息。这周时间还够,明天再去健身房。"};
   return {t:next,why:`这周健身房第 ${g+1} 次,轮到 ${next==="GA"?"A":"B"}。${left<need?"这周剩下的天不够 3 次了,能去几次算几次。":""}去不了就在家练一节,或者休息。`};
 }
